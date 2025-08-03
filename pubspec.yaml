@@ -14,13 +14,86 @@ dependencies:
   dio: ^5.8.0+1
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.6.1
   get_it: ^8.0.3
-  riverpod: ^2.6.1
 
 dev_dependencies:
+  custom_lint: ^0.7.6
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
+  riverpod_lint: ^2.6.5
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/fonts/
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Black.ttf
+        - asset: assets/fonts/Roboto-BlackItalic.ttf
+          style: italic
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/Roboto-Italic.ttf
+          style: italic
+        - asset: assets/fonts/Roboto-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Roboto-LightItalic.ttf
+          style: italic
+          weight: 300
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Roboto-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Roboto-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Roboto-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Roboto-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Roboto-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Roboto-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Roboto-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Roboto-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Roboto-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+
+    - family: Libertinus Serif
+      fonts:
+        - asset: assets/fonts/LibertinusSerif-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/LibertinusSerif-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/LibertinusSerif-Italic.ttf
+          style: italic
+        - asset: assets/fonts/LibertinusSerif-Regular.ttf
+        - asset: assets/fonts/LibertinusSerif-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/LibertinusSerif-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
