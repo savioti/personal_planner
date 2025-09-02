@@ -29,6 +29,12 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
   final _eventTimeTextController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _initFieldsWithDefaultValues();
+  }
+
+  @override
   void dispose() {
     _eventTitleTextController.dispose();
     _eventDateTextController.dispose();
@@ -188,5 +194,13 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
     if (context.mounted) {
       Navigator.of(context).pop();
     }
+  }
+
+  void _initFieldsWithDefaultValues() {
+    final now = DateTime.now();
+    _eventDateTextController.text =
+        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    _eventTimeTextController.text =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
   }
 }
