@@ -1,5 +1,6 @@
 import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/shared/classes/range.dart';
+import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
 class EventUtils {
   static Map<DateTime, List<EventEntity>> groupEventsByDay(
@@ -22,7 +23,10 @@ class EventUtils {
 
   static List<DateTime> getDaysOfTheWeek(DateTime date) {
     final startOfWeek = getStartOfWeek(date);
-    return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+    return List.generate(
+      7,
+      (index) => startOfWeek.add(Duration(days: index)).toDateOnly,
+    );
   }
 
   static DateTime getStartOfWeek(DateTime date) {

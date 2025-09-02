@@ -13,7 +13,9 @@ import 'package:personal_planner/app/shared/design_system/text_field/app_time_te
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
 class WeekViewAddEventDialog extends StatefulWidget {
-  const WeekViewAddEventDialog({super.key});
+  final VoidCallback onEventAdded;
+
+  const WeekViewAddEventDialog({super.key, required this.onEventAdded});
 
   @override
   State<WeekViewAddEventDialog> createState() => _WeekViewAddEventDialogState();
@@ -180,6 +182,8 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
     if (result.isLeft()) {
       return;
     }
+
+    widget.onEventAdded();
 
     if (context.mounted) {
       Navigator.of(context).pop();

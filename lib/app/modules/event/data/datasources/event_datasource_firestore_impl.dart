@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
 import 'package:personal_planner/app/modules/event/data/requests/add_event_request.dart';
 import 'package:personal_planner/app/modules/event/data/models/event_model.dart';
+import 'package:personal_planner/app/modules/event/data/requests/delete_event_request.dart';
 import 'package:personal_planner/app/modules/event/data/requests/get_events_request.dart';
 
 class EventDatasourceFirestoreImpl implements EventDatasource {
@@ -74,6 +75,27 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
       );
     } catch (e) {
       throw Exception('EventFirestoreDatasourceImpl.getEvents: $e');
+    }
+  }
+
+  @override
+  Future<bool> deleteEvent(DeleteEventRequest request) async {
+    try {
+      final docRef = _firestore.collection('events').doc(request.eventId);
+      final docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        throw StateError('Document not found: ${docRef.path}');
+      }
+
+      await docRef.delete();
+      return true;
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'EventFirestoreDatasourceImpl.deleteEvent - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('EventFirestoreDatasourceImpl.deleteEvent: $e');
     }
   }
 }

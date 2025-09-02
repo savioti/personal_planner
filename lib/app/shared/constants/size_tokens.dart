@@ -53,4 +53,8 @@ class AppDimensions {
 
   static const double mainButtonBorderRadius = radiusLarge;
   static const double mainButtonBorderWidth = 1.0;
+
+  static const double iconButtonSize = 24.0;
+  static const double iconButtonIconSize = 16.0;
+  static const double iconButtonBorderRadius = radiusSmall;
 }

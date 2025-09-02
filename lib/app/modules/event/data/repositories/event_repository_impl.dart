@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
 import 'package:personal_planner/app/modules/event/data/requests/add_event_request.dart';
+import 'package:personal_planner/app/modules/event/data/requests/delete_event_request.dart';
 import 'package:personal_planner/app/modules/event/data/requests/get_events_request.dart';
 import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/event/domain/repositories/event_repository.dart';
@@ -41,6 +42,21 @@ class EventRepositoryImpl implements EventRepository {
         Failure(
           message:
               'EventRepositoryImpl - Failed to get events: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteEvent(DeleteEventRequest request) async {
+    try {
+      final result = await _datasource.deleteEvent(request);
+      return Right(result);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'EventRepositoryImpl - Failed to delete event: ${e.toString()}',
         ),
       );
     }

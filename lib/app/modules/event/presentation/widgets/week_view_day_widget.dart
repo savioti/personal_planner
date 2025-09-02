@@ -10,6 +10,7 @@ class WeekviewDayWidget extends StatelessWidget {
   final String title;
   final EWeekday weekday;
   final List<EventEntity> events;
+  final Function(String eventId) onDelete;
   final bool useVariantColor;
 
   const WeekviewDayWidget({
@@ -17,6 +18,7 @@ class WeekviewDayWidget extends StatelessWidget {
     required this.weekday,
     required this.title,
     required this.events,
+    required this.onDelete,
     this.useVariantColor = false,
   });
 
@@ -46,7 +48,7 @@ class WeekviewDayWidget extends StatelessWidget {
               separatorBuilder: (context, index) => const VerticalGap.small(),
               itemBuilder: (context, index) {
                 final event = events[index];
-                return WeekViewEventWidget(event: event);
+                return WeekViewEventWidget(event: event, onDelete: onDelete);
               },
             ),
           ),
