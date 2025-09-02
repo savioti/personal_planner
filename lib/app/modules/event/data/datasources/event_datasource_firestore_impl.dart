@@ -3,8 +3,8 @@ import 'package:personal_planner/app/modules/event/data/datasources/event_dataso
 import 'package:personal_planner/app/modules/event/data/models/add_event_request.dart';
 import 'package:personal_planner/app/modules/event/data/models/event_model.dart';
 
-class EventFirestoreDatasourceImpl implements EventDatasource {
-  EventFirestoreDatasourceImpl({FirebaseFirestore? firestore})
+class EventDatasourceFirestoreImpl implements EventDatasource {
+  EventDatasourceFirestoreImpl({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;

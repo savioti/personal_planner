@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
-import 'package:personal_planner/app/modules/event/data/datasources/event_firestore_datasource_impl.dart';
+import 'package:personal_planner/app/modules/event/data/datasources/event_datasource_firestore_impl.dart';
 import 'package:personal_planner/app/modules/event/data/repositories/event_repository_impl.dart';
 import 'package:personal_planner/app/modules/event/domain/repositories/event_repository.dart';
 import 'package:personal_planner/app/modules/event/domain/usecases/add_event_usecase.dart';
@@ -27,7 +27,7 @@ void _registerDataSources() {
     () => TranslationsDatasourceImpl(),
   );
   serviceLocator.registerLazySingleton<EventDatasource>(
-    () => EventFirestoreDatasourceImpl(),
+    () => EventDatasourceFirestoreImpl(),
   );
 }
 
