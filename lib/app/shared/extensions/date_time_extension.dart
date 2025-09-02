@@ -10,4 +10,9 @@ extension DateTimeExtension on DateTime {
 
     return baseDate;
   }
+
+  // remove time and minute from datetime
+  DateTime get toDateOnly {
+    return DateTime(year, month, day);
+  }
 }

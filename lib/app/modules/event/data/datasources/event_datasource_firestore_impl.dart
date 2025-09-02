@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
-import 'package:personal_planner/app/modules/event/data/models/add_event_request.dart';
+import 'package:personal_planner/app/modules/event/data/requests/add_event_request.dart';
 import 'package:personal_planner/app/modules/event/data/models/event_model.dart';
+import 'package:personal_planner/app/modules/event/data/requests/get_events_request.dart';
 
 class EventDatasourceFirestoreImpl implements EventDatasource {
   EventDatasourceFirestoreImpl({FirebaseFirestore? firestore})
@@ -39,6 +40,40 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
       );
     } catch (e) {
       throw Exception('EventFirestoreDatasourceImpl.addEvent: $e');
+    }
+  }
+
+  @override
+  Future<List<EventModel>> getEvents(GetEventsRequest request) async {
+    try {
+      final col = _firestore.collection('events');
+
+      final querySnap = await col
+          .where(
+            'start_time',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(request.dateRangeStart),
+          )
+          .where(
+            'start_time',
+            isLessThanOrEqualTo: Timestamp.fromDate(request.dateRangeEnd),
+          )
+          .orderBy('start_time')
+          .get();
+
+      final events = <EventModel>[];
+
+      for (final docSnap in querySnap.docs) {
+        final data = docSnap.data();
+        events.add(await EventModel.fromMap({...data, 'id': docSnap.id}));
+      }
+
+      return events;
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'EventFirestoreDatasourceImpl.getEvents - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('EventFirestoreDatasourceImpl.getEvents: $e');
     }
   }
 }

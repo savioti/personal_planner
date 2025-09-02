@@ -1,6 +1,6 @@
 import 'package:personal_planner/app/modules/translations/domain/usecases/get_translation_usecase.dart';
 import 'package:personal_planner/app/modules/translations/domain/usecases/load_translations_usecase.dart';
-import 'package:personal_planner/app/shared/models/no_params.dart';
+import 'package:personal_planner/app/shared/classes/no_params.dart';
 
 class TranslationsController {
   final GetTranslationUsecase getTranslationUsecase;

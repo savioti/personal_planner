@@ -5,7 +5,7 @@ import 'package:personal_planner/app/modules/translations/domain/entities/transl
 import 'package:personal_planner/app/modules/translations/domain/repositories/translations_repository.dart';
 import 'package:personal_planner/app/shared/error/exception.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
-import 'package:personal_planner/app/shared/models/no_content_success.dart';
+import 'package:personal_planner/app/shared/classes/no_content_success.dart';
 
 class TranslationsRepositoryImpl implements TranslationsRepository {
   final TranslationsDatasource datasource;

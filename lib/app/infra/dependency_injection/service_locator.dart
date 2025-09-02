@@ -4,6 +4,7 @@ import 'package:personal_planner/app/modules/event/data/datasources/event_dataso
 import 'package:personal_planner/app/modules/event/data/repositories/event_repository_impl.dart';
 import 'package:personal_planner/app/modules/event/domain/repositories/event_repository.dart';
 import 'package:personal_planner/app/modules/event/domain/usecases/add_event_usecase.dart';
+import 'package:personal_planner/app/modules/event/domain/usecases/get_events_usecase.dart';
 import 'package:personal_planner/app/modules/event/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/data/datasources/translations_datasource.dart';
 import 'package:personal_planner/app/modules/translations/data/datasources/translations_datasource_impl.dart';
@@ -50,6 +51,9 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<AddEventUsecase>(
     () => AddEventUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<GetEventsUsecase>(
+    () => GetEventsUsecase(repository: serviceLocator.get()),
+  );
 }
 
 void _registerControllers() {
@@ -60,6 +64,9 @@ void _registerControllers() {
     ),
   );
   serviceLocator.registerLazySingleton<EventController>(
-    () => EventController(addEventUsecase: serviceLocator.get()),
+    () => EventController(
+      addEventUsecase: serviceLocator.get(),
+      getEventsUsecase: serviceLocator.get(),
+    ),
   );
 }
