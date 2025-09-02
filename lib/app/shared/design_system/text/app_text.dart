@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:personal_planner/app/shared/constants/font_families.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
-class DSText extends StatelessWidget {
+class AppText extends StatelessWidget {
   final String text;
   final TextStyle? style;
   final String? fontFamily;
   final Color? color;
 
-  const DSText({
+  const AppText({
     super.key,
     required this.text,
     this.style,

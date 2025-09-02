@@ -1,4 +1,10 @@
 import 'package:get_it/get_it.dart';
+import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
+import 'package:personal_planner/app/modules/event/data/datasources/event_firestore_datasource_impl.dart';
+import 'package:personal_planner/app/modules/event/data/repositories/event_repository_impl.dart';
+import 'package:personal_planner/app/modules/event/domain/repositories/event_repository.dart';
+import 'package:personal_planner/app/modules/event/domain/usecases/add_event_usecase.dart';
+import 'package:personal_planner/app/modules/event/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/data/datasources/translations_datasource.dart';
 import 'package:personal_planner/app/modules/translations/data/datasources/translations_datasource_impl.dart';
 import 'package:personal_planner/app/modules/translations/data/repositories/translations_repository_impl.dart';
@@ -20,11 +26,17 @@ void _registerDataSources() {
   serviceLocator.registerLazySingleton<TranslationsDatasource>(
     () => TranslationsDatasourceImpl(),
   );
+  serviceLocator.registerLazySingleton<EventDatasource>(
+    () => EventFirestoreDatasourceImpl(),
+  );
 }
 
 void _registerRepositories() {
   serviceLocator.registerLazySingleton<TranslationsRepository>(
     () => TranslationsRepositoryImpl(datasource: serviceLocator.get()),
+  );
+  serviceLocator.registerLazySingleton<EventRepository>(
+    () => EventRepositoryImpl(datasource: serviceLocator.get()),
   );
 }
 
@@ -35,6 +47,9 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<LoadTranslationsUsecase>(
     () => LoadTranslationsUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<AddEventUsecase>(
+    () => AddEventUsecase(repository: serviceLocator.get()),
+  );
 }
 
 void _registerControllers() {
@@ -43,5 +58,8 @@ void _registerControllers() {
       getTranslationUsecase: serviceLocator.get(),
       loadTranslationsUsecase: serviceLocator.get(),
     ),
+  );
+  serviceLocator.registerLazySingleton<EventController>(
+    () => EventController(addEventUsecase: serviceLocator.get()),
   );
 }

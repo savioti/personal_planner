@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867758047651",
+    "project_id": "personal-planner-c86bb",
+    "storage_bucket": "personal-planner-c86bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867758047651:android:a89090c9c6a3a94a5bda16",
+        "android_client_info": {
+          "package_name": "com.example.personal_planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMlzAQ5iGj2UR9buqCnBoLfYepi5ywtM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
