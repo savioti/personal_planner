@@ -30,7 +30,7 @@ class AppDimensions {
 
   static const double radiusSmall = BaseTokens.space1;
   static const double radiusMedium = BaseTokens.space2;
-  static const double radiusLarge = BaseTokens.space3;
+  static const double radiusLarge = BaseTokens.space4;
 
   static const double iconSizeSmall = 8.0;
   static const double iconSizeMedium = 16.0;
@@ -50,4 +50,7 @@ class AppDimensions {
   static const double dialogBorderWidth = 2.0;
   static const double dialogBorderRadius = 16.0;
   static const double dialogMaxWidth = 400.0;
+
+  static const double mainButtonBorderRadius = radiusLarge;
+  static const double mainButtonBorderWidth = 1.0;
 }

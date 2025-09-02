@@ -4,7 +4,7 @@ import 'package:personal_planner/app/modules/event/presentation/event_controller
 import 'package:personal_planner/app/modules/translations/presentation/translations_controller.dart';
 import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
-import 'package:personal_planner/app/shared/design_system/button/app_primary_button.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_main_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
@@ -130,14 +130,19 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       mainAxisSize: MainAxisSize.min,
       children: [
-        AppPrimaryButton(
-          labelText: tr('week_view.add_event_dialog.event_save'),
-          onPressed: () => _saveEvent(context: context),
+        Expanded(
+          child: AppMainButton(
+            labelText: tr('week_view.add_event_dialog.event_discard'),
+            buttonType: EButtonType.secondary,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         const HorizontalGap.medium(),
-        AppPrimaryButton(
-          labelText: tr('week_view.add_event_dialog.event_discard'),
-          onPressed: () => Navigator.of(context).pop(),
+        Expanded(
+          child: AppMainButton(
+            labelText: tr('week_view.add_event_dialog.event_save'),
+            onPressed: () => _saveEvent(context: context),
+          ),
         ),
       ],
     );
