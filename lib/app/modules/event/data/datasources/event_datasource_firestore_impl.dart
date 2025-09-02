@@ -34,7 +34,9 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
 
       return EventModel.fromMap({...data, 'id': docRef.id});
     } on FirebaseException catch (e) {
-      throw Exception('Firestore error [${e.code}]: ${e.message}');
+      throw Exception(
+        'EventFirestoreDatasourceImpl.addEvent - Firestore error [${e.code}]: ${e.message}',
+      );
     } catch (e) {
       throw Exception('EventFirestoreDatasourceImpl.addEvent: $e');
     }

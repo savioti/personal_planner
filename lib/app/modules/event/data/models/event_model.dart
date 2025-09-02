@@ -5,7 +5,7 @@ class EventModel {
   final String id;
   final String title;
   final DateTime startTime;
-  final DateTime endTime;
+  final DateTime? endTime;
   final String? description;
 
   EventModel({
