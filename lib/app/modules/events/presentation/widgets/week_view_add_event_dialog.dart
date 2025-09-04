@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
-import 'package:personal_planner/app/modules/event/presentation/event_controller.dart';
+import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/presentation/translations_controller.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_main_button.dart';

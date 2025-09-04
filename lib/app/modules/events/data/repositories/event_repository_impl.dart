@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:personal_planner/app/modules/event/data/datasources/event_datasource.dart';
-import 'package:personal_planner/app/modules/event/data/requests/add_event_request.dart';
-import 'package:personal_planner/app/modules/event/data/requests/delete_event_request.dart';
-import 'package:personal_planner/app/modules/event/data/requests/get_events_request.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/event/domain/repositories/event_repository.dart';
+import 'package:personal_planner/app/modules/events/data/datasources/event_datasource.dart';
+import 'package:personal_planner/app/modules/events/data/requests/add_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/repositories/event_repository.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
 
 class EventRepositoryImpl implements EventRepository {

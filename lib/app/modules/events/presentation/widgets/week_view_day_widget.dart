@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/event/presentation/widgets/week_view_event_widget.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_event_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';

@@ -1,4 +1,4 @@
-import 'package:personal_planner/app/modules/event/data/models/event_model.dart';
+import 'package:personal_planner/app/modules/events/data/models/event_model.dart';
 
 class EventEntity {
   final String id;

@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:personal_planner/app/modules/event/data/requests/add_event_request.dart';
-import 'package:personal_planner/app/modules/event/data/requests/delete_event_request.dart';
-import 'package:personal_planner/app/modules/event/data/requests/get_events_request.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/event/domain/usecases/add_event_usecase.dart';
-import 'package:personal_planner/app/modules/event/domain/usecases/delete_event_usecase.dart';
-import 'package:personal_planner/app/modules/event/domain/usecases/get_events_usecase.dart';
+import 'package:personal_planner/app/modules/events/data/requests/add_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/add_event_usecase.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/delete_event_usecase.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/get_events_usecase.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
-import 'package:personal_planner/app/modules/event/domain/utils/event_utils.dart';
+import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
 import 'package:personal_planner/app/shared/classes/range.dart';
 
 class EventController {

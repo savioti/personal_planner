@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 
 class EventModel {
   final String id;

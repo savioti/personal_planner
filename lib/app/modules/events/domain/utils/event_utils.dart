@@ -1,4 +1,4 @@
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/shared/classes/range.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';

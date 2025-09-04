@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
-import 'package:personal_planner/app/modules/event/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/event/domain/utils/event_utils.dart';
-import 'package:personal_planner/app/modules/event/presentation/event_controller.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
+import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/presentation/translations_controller.dart';
-import 'package:personal_planner/app/modules/event/presentation/widgets/week_view_add_event_dialog.dart';
-import 'package:personal_planner/app/modules/event/presentation/widgets/week_view_day_widget.dart';
+import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_add_event_dialog.dart';
+import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_day_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
