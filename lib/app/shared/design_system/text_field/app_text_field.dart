@@ -18,9 +18,17 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return TextField(
       controller: controller,
-      decoration: InputDecoration(labelText: labelText, hintText: hintText),
+      decoration: InputDecoration(
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: theme.colorScheme.onPrimary),
+        ),
+        labelText: labelText,
+        hintText: hintText,
+      ),
       readOnly: readOnly,
       onTap: onTap,
     );
