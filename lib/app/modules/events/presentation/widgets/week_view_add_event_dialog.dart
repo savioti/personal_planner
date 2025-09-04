@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
-import 'package:personal_planner/app/modules/translations/presentation/translations_controller.dart';
+import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_main_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
@@ -72,18 +72,14 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
   }
 
   Widget _buildTitle() {
-    final tr = serviceLocator.get<TranslationsController>();
-
     return AppText(
-      text: tr('week_view.add_event_dialog.dialog_title'),
+      text: WeekViewTranslations.dialogTitle,
       color: Theme.of(context).colorScheme.onPrimary,
       style: AppTextStyles.displaySmall().copyWith(),
     );
   }
 
   Widget _buildTextFields() {
-    final tr = serviceLocator.get<TranslationsController>();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -91,7 +87,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: '${tr('week_view.add_event_dialog.event_title')}:',
+              text: WeekViewTranslations.eventTitle,
               color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
@@ -106,7 +102,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: '${tr('week_view.add_event_dialog.event_date')}:',
+              text: WeekViewTranslations.eventDate,
               color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
@@ -121,7 +117,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: '${tr('week_view.add_event_dialog.event_time')}:',
+              text: WeekViewTranslations.eventTime,
               color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
@@ -136,15 +132,13 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
   }
 
   Widget _buildActionButtons({required BuildContext context}) {
-    final tr = serviceLocator.get<TranslationsController>();
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: AppMainButton(
-            labelText: tr('week_view.add_event_dialog.event_discard'),
+            labelText: WeekViewTranslations.eventDiscard,
             buttonType: EButtonType.secondary,
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -152,7 +146,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
         const HorizontalGap.medium(),
         Expanded(
           child: AppMainButton(
-            labelText: tr('week_view.add_event_dialog.event_save'),
+            labelText: WeekViewTranslations.eventSave,
             onPressed: () => _saveEvent(context: context),
           ),
         ),

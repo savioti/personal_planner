@@ -4,9 +4,9 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
-import 'package:personal_planner/app/modules/translations/presentation/translations_controller.dart';
 import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_add_event_dialog.dart';
 import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_day_widget.dart';
+import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
@@ -62,14 +62,13 @@ class WeekviewWidget extends ConsumerWidget {
   }
 
   Widget _buildHeader({required BuildContext context, required WidgetRef ref}) {
-    final tr = serviceLocator.get<TranslationsController>();
     final theme = Theme.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          text: tr('week_view.title'),
+          text: WeekViewTranslations.title,
           color: theme.colorScheme.onPrimary,
           style: AppTextStyles.titleMedium(),
         ),
@@ -97,7 +96,6 @@ class WeekviewWidget extends ConsumerWidget {
     required List<EventEntity> events,
     required WidgetRef ref,
   }) {
-    final tr = serviceLocator.get<TranslationsController>();
     final eventsByDay = EventUtils.groupEventsByDay(events);
     final daysOfTheWeek = EventUtils.getDaysOfTheWeek(DateTime.now());
 
@@ -113,10 +111,9 @@ class WeekviewWidget extends ConsumerWidget {
                 final date = daysOfTheWeek[index];
                 final events = eventsByDay[date] ?? [];
                 final weekday = EWeekday.values[index];
-                final weekdayKey = weekday.toString();
 
                 return WeekviewDayWidget(
-                  title: tr('weekday.$weekdayKey'),
+                  title: WeekdayTranslations.getWeekDayNameByIndex(index),
                   weekday: weekday,
                   events: events,
                   onDelete: (eventId) =>
