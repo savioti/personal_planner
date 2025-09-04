@@ -1,4 +1,3 @@
-// class for string extensions
 extension DateTimeExtension on DateTime {
   String get toEventTime {
     final baseDate =
@@ -11,8 +10,33 @@ extension DateTimeExtension on DateTime {
     return baseDate;
   }
 
-  // remove time and minute from datetime
   DateTime get toDateOnly {
     return DateTime(year, month, day);
+  }
+
+  DateTime get roundToNearestHalfHour {
+    final int minutePart = minute;
+    if (minutePart == 0 || minutePart == 30) {
+      return this;
+    } else if (minutePart < 30) {
+      return DateTime(year, month, day, hour, 30);
+    } else {
+      return DateTime(year, month, day, hour + 1, 0);
+    }
+  }
+
+  DateTime get roundToNearestQuarterHour {
+    final int minutePart = minute;
+    if (minutePart % 15 == 0) {
+      return this;
+    } else if (minutePart < 15) {
+      return DateTime(year, month, day, hour, 15);
+    } else if (minutePart < 30) {
+      return DateTime(year, month, day, hour, 30);
+    } else if (minutePart < 45) {
+      return DateTime(year, month, day, hour, 45);
+    } else {
+      return DateTime(year, month, day, hour + 1, 0);
+    }
   }
 }

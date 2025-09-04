@@ -40,7 +40,7 @@ class WeekviewDayWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          AppText(text: title),
+          AppText(text: title, color: theme.colorScheme.onPrimary),
           const VerticalGap.medium(),
           Expanded(
             child: ListView.separated(

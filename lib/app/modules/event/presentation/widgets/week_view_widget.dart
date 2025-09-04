@@ -63,12 +63,14 @@ class WeekviewWidget extends ConsumerWidget {
 
   Widget _buildHeader({required BuildContext context, required WidgetRef ref}) {
     final tr = serviceLocator.get<TranslationsController>();
+    final theme = Theme.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
           text: tr('week_view.title'),
+          color: theme.colorScheme.onPrimary,
           style: AppTextStyles.titleMedium(),
         ),
         IconButton(
