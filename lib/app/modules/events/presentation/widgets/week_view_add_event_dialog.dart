@@ -76,7 +76,8 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
 
     return AppText(
       text: tr('week_view.add_event_dialog.dialog_title'),
-      style: AppTextStyles.displaySmall(),
+      color: Theme.of(context).colorScheme.onPrimary,
+      style: AppTextStyles.displaySmall().copyWith(),
     );
   }
 
@@ -91,6 +92,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           children: [
             AppText(
               text: '${tr('week_view.add_event_dialog.event_title')}:',
+              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -105,6 +107,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           children: [
             AppText(
               text: '${tr('week_view.add_event_dialog.event_date')}:',
+              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -119,6 +122,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           children: [
             AppText(
               text: '${tr('week_view.add_event_dialog.event_time')}:',
+              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),

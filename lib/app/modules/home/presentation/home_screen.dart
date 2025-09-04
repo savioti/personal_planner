@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:personal_planner/app/modules/week_tasks/widgets/week_tasks_widget.dart';
-import 'package:personal_planner/app/modules/event/presentation/widgets/week_view_widget.dart';
+import 'package:personal_planner/app/modules/tasks/presentation/widgets/week_tasks_widget.dart';
+import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 
 class HomeScreen extends StatelessWidget {
