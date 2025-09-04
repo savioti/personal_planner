@@ -31,7 +31,7 @@ class EventModel {
     );
   }
 
-  static EventModel fromMap(Map<String, dynamic> map) {
+  factory EventModel.fromMap(Map<String, dynamic> map) {
     var endTime = map['end_time'];
 
     if (endTime != null) {
