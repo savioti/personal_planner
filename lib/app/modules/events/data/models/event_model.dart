@@ -31,7 +31,7 @@ class EventModel {
     );
   }
 
-  static Future<EventModel> fromMap(Map<String, dynamic> map) async {
+  static EventModel fromMap(Map<String, dynamic> map) {
     var endTime = map['end_time'];
 
     if (endTime != null) {

@@ -65,7 +65,7 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
 
       for (final docSnap in querySnap.docs) {
         final data = docSnap.data();
-        events.add(await EventModel.fromMap({...data, 'id': docSnap.id}));
+        events.add(EventModel.fromMap({...data, 'id': docSnap.id}));
       }
 
       return events;
