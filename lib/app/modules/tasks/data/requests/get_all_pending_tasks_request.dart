@@ -1,0 +1,3 @@
+class GetAllPendingTasksRequest {
+  GetAllPendingTasksRequest();
+}

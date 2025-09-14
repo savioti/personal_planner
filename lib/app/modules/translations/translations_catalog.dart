@@ -6,6 +6,33 @@ class WeekdayTranslations {
   static const String friday = 'Sexta';
   static const String saturday = 'Sábado';
   static const String sunday = 'Domingo';
+
+  static String getWeekDayNameByIndex(int index) {
+    switch (index) {
+      case 0:
+        return monday;
+      case 1:
+        return tuesday;
+      case 2:
+        return wednesday;
+      case 3:
+        return thursday;
+      case 4:
+        return friday;
+      case 5:
+        return saturday;
+      case 6:
+        return sunday;
+      default:
+        return '';
+    }
+  }
+}
+
+class RelativeDayTranslations {
+  static const String today = 'Hoje';
+  static const String tomorrow = 'Amanhã';
+  static const String yesterday = 'Ontem';
 }
 
 class MonthTranslations {

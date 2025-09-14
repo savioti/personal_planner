@@ -8,24 +8,26 @@ import 'package:personal_planner/app/modules/events/presentation/widgets/week_vi
 import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_day_widget.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/e_weekday.dart';
+import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
 class WeekviewWidget extends ConsumerWidget {
   WeekviewWidget({super.key});
 
-  final int daysInWeek = 7;
-  final EventController controller = serviceLocator.get<EventController>();
+  final int _daysInWeek = 7;
+  final EventController _controller = serviceLocator.get<EventController>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final weekDateRange = ref.watch(controller.currentWeekDateRangeProvider);
+    final weekDateRange = ref.watch(_controller.currentWeekDateRangeProvider);
     final weekEventsAsync = ref.watch(
-      controller.weekEventsProvider(weekDateRange),
+      _controller.weekEventsProvider(weekDateRange),
     );
 
     return Container(
@@ -44,7 +46,7 @@ class WeekviewWidget extends ConsumerWidget {
               loading: () {
                 return const Center(child: CircularProgressIndicator());
               },
-              error: (error, stack) {
+              error: (error, _) {
                 return Center(child: Text('Error: $error'));
               },
               data: (events) {
@@ -72,8 +74,9 @@ class WeekviewWidget extends ConsumerWidget {
           color: theme.colorScheme.onPrimary,
           style: AppTextStyles.titleMedium(),
         ),
-        IconButton(
-          icon: const Icon(Icons.add),
+        AppIconButton(
+          iconData: Icons.add,
+          color: Theme.of(context).colorScheme.onPrimary,
           onPressed: () {
             showDialog(
               context: context,
@@ -97,7 +100,7 @@ class WeekviewWidget extends ConsumerWidget {
     required WidgetRef ref,
   }) {
     final eventsByDay = EventUtils.groupEventsByDay(events);
-    final daysOfTheWeek = EventUtils.getDaysOfTheWeek(DateTime.now());
+    final daysOfTheWeek = DateTime.now().getDaysOfTheWeek();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +110,7 @@ class WeekviewWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(daysInWeek, (index) {
+              children: List.generate(_daysInWeek, (index) {
                 final date = daysOfTheWeek[index];
                 final events = eventsByDay[date] ?? [];
                 final weekday = EWeekday.values[index];
@@ -131,11 +134,11 @@ class WeekviewWidget extends ConsumerWidget {
     required String eventId,
     required WidgetRef ref,
   }) async {
-    await controller.deleteEvent(eventId: eventId);
-    ref.invalidate(controller.weekEventsProvider);
+    await _controller.deleteEvent(eventId: eventId);
+    ref.invalidate(_controller.weekEventsProvider);
   }
 
   void _onEventAdded(WidgetRef ref) {
-    ref.invalidate(controller.weekEventsProvider);
+    ref.invalidate(_controller.weekEventsProvider);
   }
 }

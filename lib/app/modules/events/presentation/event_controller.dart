@@ -10,8 +10,8 @@ import 'package:personal_planner/app/shared/error/failure.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
-import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
 import 'package:personal_planner/app/shared/classes/range.dart';
+import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
 class EventController {
   final AddEventUsecase addEventUsecase;
@@ -26,7 +26,7 @@ class EventController {
     _initializeProviders();
   }
 
-  late final Provider<EventController> eventProvider;
+  late final Provider<EventController> eventControllerProvider;
   late final Provider<Range<DateTime>> currentWeekDateRangeProvider;
   late final FutureProviderFamily<List<EventEntity>, Range<DateTime>>
   weekEventsProvider;
@@ -89,13 +89,13 @@ class EventController {
   }
 
   void _initializeProviders() {
-    eventProvider = Provider<EventController>((ref) {
+    eventControllerProvider = Provider<EventController>((ref) {
       return serviceLocator<EventController>();
     });
 
     currentWeekDateRangeProvider = Provider<Range<DateTime>>((ref) {
       final today = DateTime.now();
-      return EventUtils.getWeekDateRange(today);
+      return today.getWeekDateRange();
     });
 
     weekEventsProvider =
@@ -103,7 +103,7 @@ class EventController {
           ref,
           weekDateRange,
         ) async {
-          final controller = ref.watch(eventProvider);
+          final controller = ref.watch(eventControllerProvider);
 
           final result = await controller.getEvents(
             dateRangeStart: weekDateRange.start,
