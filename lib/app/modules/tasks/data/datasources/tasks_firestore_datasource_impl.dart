@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_datasource.dart';
 import 'package:personal_planner/app/modules/tasks/data/models/task_model.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 
 class TasksFirestoreDatasourceImpl implements TasksDatasource {
@@ -82,6 +83,39 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
       );
     } catch (e) {
       throw Exception('TasksFirestoreDatasourceImpl.getTasks: $e');
+    }
+  }
+
+  @override
+  Future<List<TaskModel>> getBacklogTasks(
+    GetBacklogTasksRequest request,
+  ) async {
+    try {
+      final col = _firestore.collection('tasks');
+      Query<Map<String, dynamic>> query = col;
+
+      query = query.where(
+        'deadline',
+        isLessThan: Timestamp.fromDate(request.before),
+      );
+
+      query = query.where('is_done', isEqualTo: false);
+
+      final querySnap = await query.get();
+      final tasks = <TaskModel>[];
+
+      for (final docSnap in querySnap.docs) {
+        final data = docSnap.data();
+        tasks.add(TaskModel.fromMap({...data, 'id': docSnap.id}));
+      }
+
+      return tasks;
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'TasksFirestoreDatasourceImpl.getBacklogTasks - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('TasksFirestoreDatasourceImpl.getBacklogTasks: $e');
     }
   }
 }

@@ -3,20 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_all_pending_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
 
 class TasksController {
   final AddTaskUsecase _addTaskUsecase;
   final GetAllPendingTasksUsecase _getAllPendingTasksUsecase;
+  final GetBacklogTasksRequestUsecase _getBacklogTasksRequestUsecase;
 
   TasksController({
     required AddTaskUsecase addTaskUsecase,
     required GetAllPendingTasksUsecase getAllPendingTasksUsecase,
+    required GetBacklogTasksRequestUsecase getBacklogTasksRequestUsecase,
   }) : _addTaskUsecase = addTaskUsecase,
-       _getAllPendingTasksUsecase = getAllPendingTasksUsecase {
+       _getAllPendingTasksUsecase = getAllPendingTasksUsecase,
+       _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase {
     _initializeProviders();
   }
 
@@ -53,7 +58,24 @@ class TasksController {
       return Left(
         Failure(
           message:
-              'TasksController.getTasks - Failed to get tasks: ${e.toString()}',
+              'TasksController.getAllPendingTasks - Failed to get all pending tasks: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, List<TaskEntity>>> getBacklogTasks(
+    DateTime before,
+  ) async {
+    try {
+      return await _getBacklogTasksRequestUsecase(
+        GetBacklogTasksRequest(before: before),
+      );
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.getBacklogTasks - Failed to get backlog tasks: ${e.toString()}',
         ),
       );
     }
