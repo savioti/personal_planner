@@ -95,7 +95,7 @@ class EventController {
 
     currentWeekDateRangeProvider = Provider<Range<DateTime>>((ref) {
       final today = DateTime.now();
-      return today.getWeekDateRange();
+      return today.getWeekDateRange;
     });
 
     weekEventsProvider =
