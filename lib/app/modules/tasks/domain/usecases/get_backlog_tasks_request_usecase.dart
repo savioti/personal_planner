@@ -3,12 +3,15 @@ import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tas
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/repositories/tasks_repository.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
+import 'package:personal_planner/app/shared/usecase/async_usecase.dart';
 
-class GetBacklogTasksRequestUsecase {
+class GetBacklogTasksRequestUsecase
+    implements AsyncUsecase<List<TaskEntity>, GetBacklogTasksRequest> {
   final TasksRepository _repository;
 
   GetBacklogTasksRequestUsecase(this._repository);
 
+  @override
   Future<Either<Failure, List<TaskEntity>>> call(
     GetBacklogTasksRequest request,
   ) async {
