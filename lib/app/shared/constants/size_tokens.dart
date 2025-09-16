@@ -57,4 +57,7 @@ class AppDimensions {
   static const double iconButtonSize = 24.0;
   static const double iconButtonIconSize = 16.0;
   static const double iconButtonBorderRadius = radiusSmall;
+
+  static const double checkboxBorderRadius = 6.0;
+  static const double checkboxSize = 24.0;
 }

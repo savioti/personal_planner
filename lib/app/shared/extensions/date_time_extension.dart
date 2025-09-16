@@ -61,7 +61,7 @@ extension DateTimeExtension on DateTime {
     return add(Duration(days: 7 - dayOfWeek));
   }
 
-  Range<DateTime> getWeekDateRange() {
+  Range<DateTime> get getWeekDateRange {
     final startOfWeek = getStartOfWeek();
     final endOfWeek = getEndOfWeek();
     return Range(start: startOfWeek, end: endOfWeek);

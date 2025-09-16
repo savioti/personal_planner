@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_datasource.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
@@ -59,6 +60,23 @@ class TasksRepositoryImpl implements TasksRepository {
         Failure(
           message:
               'TasksRepositoryImpl.getBacklogTasks - Failed to get backlog tasks: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TaskEntity>> completeTask(
+    CompleteTaskRequest request,
+  ) async {
+    try {
+      final taskModel = await _datasource.completeTask(request);
+      return Right(taskModel.toEntity());
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksRepositoryImpl.completeTask - Failed to complete task: ${e.toString()}',
         ),
       );
     }

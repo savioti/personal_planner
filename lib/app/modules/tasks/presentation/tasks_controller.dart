@@ -2,26 +2,37 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_all_pending_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/get_tasks_usecase.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
+import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
 class TasksController {
   final AddTaskUsecase _addTaskUsecase;
+  final GetTasksUsecase _getTasksUsecase;
   final GetAllPendingTasksUsecase _getAllPendingTasksUsecase;
   final GetBacklogTasksRequestUsecase _getBacklogTasksRequestUsecase;
+  final CompleteTaskUsecase _completeTaskUsecase;
 
   TasksController({
     required AddTaskUsecase addTaskUsecase,
+    required GetTasksUsecase getTasksUsecase,
     required GetAllPendingTasksUsecase getAllPendingTasksUsecase,
     required GetBacklogTasksRequestUsecase getBacklogTasksRequestUsecase,
+    required CompleteTaskUsecase completeTaskUsecase,
   }) : _addTaskUsecase = addTaskUsecase,
+       _getTasksUsecase = getTasksUsecase,
        _getAllPendingTasksUsecase = getAllPendingTasksUsecase,
-       _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase {
+       _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase,
+       _completeTaskUsecase = completeTaskUsecase {
     _initializeProviders();
   }
 
@@ -46,6 +57,28 @@ class TasksController {
         Failure(
           message:
               'TasksController.addTask - Failed to add task: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, List<TaskEntity>>> getTasksForCurrentWeek() async {
+    try {
+      final now = DateTime.now();
+      final currentWeekDateRange = now.getWeekDateRange;
+
+      return await _getTasksUsecase(
+        GetTasksRequest(
+          dateRangeStart: currentWeekDateRange.start,
+          dateRangeEnd: currentWeekDateRange.end,
+          getOnlyPending: false,
+        ),
+      );
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.getAllPendingTasks - Failed to get all pending tasks: ${e.toString()}',
         ),
       );
     }
@@ -81,13 +114,29 @@ class TasksController {
     }
   }
 
+  Future<Either<Failure, TaskEntity>> completeTask({
+    required String taskId,
+  }) async {
+    try {
+      final request = CompleteTaskRequest(taskId: taskId);
+      return await _completeTaskUsecase(request);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.completeTask - Failed to complete task: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
   void _initializeProviders() {
     taskControllerProvider = Provider<TasksController>((ref) {
       return serviceLocator<TasksController>();
     });
 
     tasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
-      final result = await getAllPendingTasks();
+      final result = await getTasksForCurrentWeek();
 
       return result.fold(
         (failure) => throw Exception(failure.message),

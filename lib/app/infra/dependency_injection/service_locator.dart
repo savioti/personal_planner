@@ -12,8 +12,10 @@ import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_firest
 import 'package:personal_planner/app/modules/tasks/data/repositories/tasks_repository_impl.dart';
 import 'package:personal_planner/app/modules/tasks/domain/repositories/tasks_repository.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/get_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 
 final serviceLocator = GetIt.instance;
@@ -56,11 +58,17 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<AddTaskUsecase>(
     () => AddTaskUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<GetTasksUsecase>(
+    () => GetTasksUsecase(repository: serviceLocator.get()),
+  );
   serviceLocator.registerLazySingleton<GetAllPendingTasksUsecase>(
     () => GetAllPendingTasksUsecase(repository: serviceLocator.get()),
   );
   serviceLocator.registerLazySingleton<GetBacklogTasksRequestUsecase>(
     () => GetBacklogTasksRequestUsecase(serviceLocator.get()),
+  );
+  serviceLocator.registerLazySingleton<CompleteTaskUsecase>(
+    () => CompleteTaskUsecase(repository: serviceLocator.get()),
   );
 }
 
@@ -75,8 +83,10 @@ void _registerControllers() {
   serviceLocator.registerLazySingleton<TasksController>(
     () => TasksController(
       addTaskUsecase: serviceLocator.get(),
+      getTasksUsecase: serviceLocator.get(),
       getAllPendingTasksUsecase: serviceLocator.get(),
       getBacklogTasksRequestUsecase: serviceLocator.get(),
+      completeTaskUsecase: serviceLocator.get(),
     ),
   );
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_datasource.dart';
 import 'package:personal_planner/app/modules/tasks/data/models/task_model.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 
@@ -116,6 +117,44 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
       );
     } catch (e) {
       throw Exception('TasksFirestoreDatasourceImpl.getBacklogTasks: $e');
+    }
+  }
+
+  @override
+  Future<TaskModel> completeTask(CompleteTaskRequest request) async {
+    try {
+      final docRef = _firestore.collection('tasks').doc(request.taskId);
+      final now = DateTime.now().toUtc();
+
+      final snap = await docRef.get();
+      final data = snap.data();
+
+      if (data == null) {
+        throw StateError('Empty document ${docRef.path}');
+      }
+
+      final currentIsDone = data['is_done'] as bool? ?? false;
+      final toggledIsDone = !currentIsDone;
+
+      await docRef.update({
+        'is_done': toggledIsDone,
+        'updated_at': Timestamp.fromDate(now),
+      });
+
+      final updatedSnap = await docRef.get();
+      final updatedData = updatedSnap.data();
+
+      if (updatedData == null) {
+        throw StateError('Empty document after update ${docRef.path}');
+      }
+
+      return TaskModel.fromMap({...updatedData, 'id': docRef.id});
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'TasksFirestoreDatasourceImpl.completeTask - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('TasksFirestoreDatasourceImpl.completeTask: $e');
     }
   }
 }

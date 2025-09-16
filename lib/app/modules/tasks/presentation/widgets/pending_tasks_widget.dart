@@ -48,7 +48,10 @@ class PendingTasksWidget extends ConsumerWidget {
                       const SizedBox(height: AppDimensions.spacingSmall),
                   itemBuilder: (context, index) {
                     final task = tasks[index];
-                    return TaskWidget(task: task);
+                    return TaskWidget(
+                      task: task,
+                      onComplete: (_) => _onCompleteChanged(ref: ref),
+                    );
                   },
                 ),
               );
@@ -89,6 +92,10 @@ class PendingTasksWidget extends ConsumerWidget {
   }
 
   void _onTaskAdded({required WidgetRef ref}) {
+    ref.invalidate(_controller.tasksProvider);
+  }
+
+  void _onCompleteChanged({required WidgetRef ref}) {
     ref.invalidate(_controller.tasksProvider);
   }
 }
