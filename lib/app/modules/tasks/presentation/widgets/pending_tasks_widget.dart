@@ -51,6 +51,7 @@ class PendingTasksWidget extends ConsumerWidget {
                     return TaskWidget(
                       task: task,
                       onComplete: (_) => _onCompleteChanged(ref: ref),
+                      onDelete: (_) => _onDeletePressed(ref: ref),
                     );
                   },
                 ),
@@ -96,6 +97,10 @@ class PendingTasksWidget extends ConsumerWidget {
   }
 
   void _onCompleteChanged({required WidgetRef ref}) {
+    ref.invalidate(_controller.tasksProvider);
+  }
+
+  void _onDeletePressed({required WidgetRef ref}) {
     ref.invalidate(_controller.tasksProvider);
   }
 }

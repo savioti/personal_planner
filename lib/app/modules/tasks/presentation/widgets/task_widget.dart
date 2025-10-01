@@ -3,6 +3,7 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/checkbox/app_checkbox.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
@@ -11,8 +12,14 @@ import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 class TaskWidget extends StatelessWidget {
   final TaskEntity task;
   final Function(String eventId) onComplete;
+  final Function(String eventId) onDelete;
 
-  const TaskWidget({super.key, required this.task, required this.onComplete});
+  const TaskWidget({
+    super.key,
+    required this.task,
+    required this.onComplete,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +48,8 @@ class TaskWidget extends StatelessWidget {
             ),
           ),
           _buildDeadline(),
+          const SizedBox(width: AppDimensions.spacingSmall),
+          _buildDeleteButton(),
         ],
       ),
     );
@@ -61,9 +70,22 @@ class TaskWidget extends StatelessWidget {
     return AppText(text: task.deadline!.toHumanReadableNextDate);
   }
 
+  Widget _buildDeleteButton() {
+    return AppIconButton(
+      iconData: Icons.delete,
+      onPressed: () => _onDeletePressed(),
+    );
+  }
+
   void _onCompleteChanged() async {
     final taskId = task.id;
     await serviceLocator.get<TasksController>().completeTask(taskId: taskId);
     onComplete(taskId);
+  }
+
+  void _onDeletePressed() async {
+    final taskId = task.id;
+    await serviceLocator.get<TasksController>().deleteTask(taskId: taskId);
+    onDelete(taskId);
   }
 }

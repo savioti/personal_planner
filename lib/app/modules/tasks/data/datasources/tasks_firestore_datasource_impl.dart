@@ -3,6 +3,7 @@ import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_dataso
 import 'package:personal_planner/app/modules/tasks/data/models/task_model.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 
@@ -155,6 +156,30 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
       );
     } catch (e) {
       throw Exception('TasksFirestoreDatasourceImpl.completeTask: $e');
+    }
+  }
+
+  @override
+  Future<TaskModel> deleteTask(DeleteTaskRequest request) async {
+    try {
+      final docRef = _firestore.collection('tasks').doc(request.taskId);
+
+      final snap = await docRef.get();
+      final data = snap.data();
+
+      if (data == null) {
+        throw StateError('Empty document ${docRef.path}');
+      }
+
+      await docRef.delete();
+
+      return TaskModel.fromMap({...data, 'id': docRef.id});
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'TasksFirestoreDatasourceImpl.deleteTask - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('TasksFirestoreDatasourceImpl.deleteTask: $e');
     }
   }
 }

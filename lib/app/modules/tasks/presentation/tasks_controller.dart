@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_all_pending_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/delete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_tasks_usecase.dart';
@@ -21,6 +23,7 @@ class TasksController {
   final GetAllPendingTasksUsecase _getAllPendingTasksUsecase;
   final GetBacklogTasksRequestUsecase _getBacklogTasksRequestUsecase;
   final CompleteTaskUsecase _completeTaskUsecase;
+  final DeleteTaskUsecase _deleteTaskUsecase;
 
   TasksController({
     required AddTaskUsecase addTaskUsecase,
@@ -28,11 +31,13 @@ class TasksController {
     required GetAllPendingTasksUsecase getAllPendingTasksUsecase,
     required GetBacklogTasksRequestUsecase getBacklogTasksRequestUsecase,
     required CompleteTaskUsecase completeTaskUsecase,
+    required DeleteTaskUsecase deleteTaskUsecase,
   }) : _addTaskUsecase = addTaskUsecase,
        _getTasksUsecase = getTasksUsecase,
        _getAllPendingTasksUsecase = getAllPendingTasksUsecase,
        _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase,
-       _completeTaskUsecase = completeTaskUsecase {
+       _completeTaskUsecase = completeTaskUsecase,
+       _deleteTaskUsecase = deleteTaskUsecase {
     _initializeProviders();
   }
 
@@ -125,6 +130,22 @@ class TasksController {
         Failure(
           message:
               'TasksController.completeTask - Failed to complete task: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, TaskEntity>> deleteTask({
+    required String taskId,
+  }) async {
+    try {
+      final request = DeleteTaskRequest(taskId: taskId);
+      return await _deleteTaskUsecase(request);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.deleteTask - Failed to delete task: ${e.toString()}',
         ),
       );
     }
