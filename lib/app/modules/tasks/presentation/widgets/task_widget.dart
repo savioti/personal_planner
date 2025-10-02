@@ -13,12 +13,14 @@ class TaskWidget extends StatelessWidget {
   final TaskEntity task;
   final Function(String eventId) onComplete;
   final Function(String eventId) onDelete;
+  final bool displayVertically;
 
   const TaskWidget({
     super.key,
     required this.task,
     required this.onComplete,
     required this.onDelete,
+    this.displayVertically = false,
   });
 
   @override
@@ -26,8 +28,10 @@ class TaskWidget extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingMedium,
+      padding: EdgeInsets.symmetric(
+        horizontal: displayVertically
+            ? AppDimensions.paddingSmall
+            : AppDimensions.paddingMedium,
         vertical: AppDimensions.paddingSmall,
       ),
       decoration: BoxDecoration(
@@ -36,21 +40,45 @@ class TaskWidget extends StatelessWidget {
           AppDimensions.weekViewEventBorderRadius,
         ),
       ),
-      child: Row(
-        children: [
-          _buildCheckbox(colorScheme: theme.colorScheme),
-          const SizedBox(width: AppDimensions.spacingSmall),
-          Expanded(
-            child: AppText(
-              text: task.title,
-              color: theme.colorScheme.onPrimary,
-              style: AppTextStyles.bodySmallBold(),
-            ),
-          ),
-          _buildDeadline(),
-          const SizedBox(width: AppDimensions.spacingSmall),
-          _buildDeleteButton(),
-        ],
+      child: Builder(
+        builder: (context) {
+          if (displayVertically) {
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    _buildCheckbox(colorScheme: theme.colorScheme),
+                    const SizedBox(width: AppDimensions.spacingSmall),
+                    AppText(
+                      text: task.title,
+                      color: theme.colorScheme.onPrimary,
+                      style: AppTextStyles.bodySmall(),
+                    ),
+                    const Spacer(),
+                    _buildDeleteButton(),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              _buildCheckbox(colorScheme: theme.colorScheme),
+              const SizedBox(width: AppDimensions.spacingSmall),
+              Expanded(
+                child: AppText(
+                  text: task.title,
+                  color: theme.colorScheme.onPrimary,
+                  style: AppTextStyles.bodySmallBold(),
+                ),
+              ),
+              _buildDeadline(),
+              const SizedBox(width: AppDimensions.spacingSmall),
+              _buildDeleteButton(),
+            ],
+          );
+        },
       ),
     );
   }
@@ -67,7 +95,10 @@ class TaskWidget extends StatelessWidget {
       return const SizedBox();
     }
 
-    return AppText(text: task.deadline!.toHumanReadableNextDate);
+    return AppText(
+      text: task.deadline!.toHumanReadableNextDate,
+      style: AppTextStyles.bodySmall(),
+    );
   }
 
   Widget _buildDeleteButton() {

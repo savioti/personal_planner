@@ -24,9 +24,11 @@ class WeekViewEventWidget extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingMedium,
-        vertical: AppDimensions.paddingSmall,
+      padding: const EdgeInsets.only(
+        left: AppDimensions.paddingSmall + AppDimensions.paddingTiny,
+        right: AppDimensions.paddingSmall,
+        top: AppDimensions.paddingSmall,
+        bottom: AppDimensions.paddingSmall,
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,

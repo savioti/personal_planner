@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_event_widget.dart';
+import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
+import 'package:personal_planner/app/modules/tasks/presentation/widgets/task_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
@@ -10,7 +12,10 @@ class WeekviewDayWidget extends StatelessWidget {
   final String title;
   final EWeekday weekday;
   final List<EventEntity> events;
-  final Function(String eventId) onDelete;
+  final List<TaskEntity> tasks;
+  final Function(String eventId) onEventDelete;
+  final Function(String taskId) onTaskComplete;
+  final Function(String taskId) onTaskDelete;
   final bool useVariantColor;
 
   const WeekviewDayWidget({
@@ -18,7 +23,10 @@ class WeekviewDayWidget extends StatelessWidget {
     required this.weekday,
     required this.title,
     required this.events,
-    required this.onDelete,
+    required this.tasks,
+    required this.onEventDelete,
+    required this.onTaskComplete,
+    required this.onTaskDelete,
     this.useVariantColor = false,
   });
 
@@ -42,15 +50,29 @@ class WeekviewDayWidget extends StatelessWidget {
         children: [
           AppText(text: title, color: theme.colorScheme.onPrimary),
           const VerticalGap.medium(),
-          Expanded(
-            child: ListView.separated(
-              itemCount: events.length,
-              separatorBuilder: (context, index) => const VerticalGap.small(),
-              itemBuilder: (context, index) {
-                final event = events[index];
-                return WeekViewEventWidget(event: event, onDelete: onDelete);
-              },
-            ),
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: tasks.length,
+            separatorBuilder: (_, index) => const VerticalGap.small(),
+            itemBuilder: (_, index) {
+              final task = tasks[index];
+              return TaskWidget(
+                displayVertically: true,
+                task: task,
+                onDelete: onTaskDelete,
+                onComplete: onTaskComplete,
+              );
+            },
+          ),
+          if (tasks.isNotEmpty) const VerticalGap.medium(),
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: events.length,
+            separatorBuilder: (_, index) => const VerticalGap.small(),
+            itemBuilder: (_, index) {
+              final event = events[index];
+              return WeekViewEventWidget(event: event, onDelete: onEventDelete);
+            },
           ),
         ],
       ),
