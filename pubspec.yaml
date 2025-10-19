@@ -80,11 +80,6 @@ flutter:
         - asset: assets/fonts/Roboto/Roboto-ExtraLightItalic.ttf
           weight: 200
           style: italic
-        - asset: assets/fonts/Roboto/Roboto-ExtraLight.ttf
-          weight: 200
-        - asset: assets/fonts/Roboto/Roboto-ExtraLightItalic.ttf
-          weight: 200
-          style: italic
 
     - family: Libertinus Serif
       fonts:
