@@ -46,41 +46,36 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.cardPadding),
       constraints: BoxConstraints(maxWidth: AppDimensions.dialogMaxWidth),
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.cardPadding),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(AppDimensions.dialogBorderRadius),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline,
-            width: AppDimensions.dialogBorderWidth,
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTitle(),
-            const VerticalGap(),
-            _buildTextFields(),
-            const VerticalGap.large(),
-            _buildActionButtons(context: context),
-          ],
-        ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppDimensions.dialogBorderRadius),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTitle(theme: theme),
+          const VerticalGap(),
+          _buildTextFields(theme: theme),
+          const VerticalGap.large(),
+          _buildActionButtons(context: context),
+        ],
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle({required ThemeData theme}) {
     return AppText(
       text: WeekTasksTranslations.dialogTitle,
-      color: Theme.of(context).colorScheme.onPrimary,
-      style: AppTextStyles.displaySmall(),
+      color: theme.colorScheme.onPrimaryContainer,
+      style: theme.textTheme.displaySmall,
     );
   }
 
-  Widget _buildTextFields() {
+  Widget _buildTextFields({required ThemeData theme}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,7 +84,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           children: [
             AppText(
               text: WeekTasksTranslations.taskTitle,
-              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -102,7 +96,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           children: [
             AppText(
               text: WeekTasksTranslations.taskDescription,
-              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -117,7 +110,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           children: [
             AppText(
               text: WeekTasksTranslations.taskDeadline,
-              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -132,7 +124,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           children: [
             AppText(
               text: WeekViewTranslations.eventTime,
-              color: Theme.of(context).colorScheme.onPrimary,
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),

@@ -17,15 +17,17 @@ class AppIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return IconButton(
-      constraints: BoxConstraints(
-        minWidth: AppDimensions.iconButtonSize,
-        minHeight: AppDimensions.iconButtonSize,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: IconButton(
+        constraints: BoxConstraints(
+          minWidth: AppDimensions.iconButtonSize,
+          minHeight: AppDimensions.iconButtonSize,
+        ),
+        iconSize: AppDimensions.iconButtonIconSize,
+        icon: Icon(iconData, color: color ?? theme.colorScheme.onPrimary),
+        onPressed: onPressed,
       ),
-      iconSize: AppDimensions.iconButtonIconSize,
-      icon: Icon(iconData, color: theme.colorScheme.onPrimary),
-
-      onPressed: onPressed,
     );
   }
 }

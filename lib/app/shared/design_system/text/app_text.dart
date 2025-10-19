@@ -7,6 +7,7 @@ class AppText extends StatelessWidget {
   final TextStyle? style;
   final String? fontFamily;
   final Color? color;
+  final TextDecoration? decoration;
 
   const AppText({
     super.key,
@@ -14,6 +15,7 @@ class AppText extends StatelessWidget {
     this.style,
     this.fontFamily,
     this.color,
+    this.decoration,
   });
 
   @override
@@ -22,14 +24,17 @@ class AppText extends StatelessWidget {
 
     return Text(
       text,
+      overflow: TextOverflow.ellipsis,
       style:
           style?.copyWith(
             fontFamily: fontFamily ?? FontFamilies.defaultFontFamily,
             color: color ?? theme.colorScheme.onSurface,
+            decoration: decoration,
           ) ??
           AppTextStyles.bodyMedium().copyWith(
             fontFamily: fontFamily ?? FontFamilies.defaultFontFamily,
             color: color ?? theme.colorScheme.onSurface,
+            decoration: decoration,
           ),
     );
   }

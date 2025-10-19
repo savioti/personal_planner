@@ -53,12 +53,14 @@ extension DateTimeExtension on DateTime {
 
   DateTime getStartOfWeek() {
     final dayOfWeek = weekday;
-    return subtract(Duration(days: dayOfWeek - 1));
+    final day = subtract(Duration(days: dayOfWeek - 1));
+    return day.toDateOnly;
   }
 
   DateTime getEndOfWeek() {
     final dayOfWeek = weekday;
-    return add(Duration(days: 7 - dayOfWeek));
+    final day = add(Duration(days: 7 - dayOfWeek));
+    return day.dayEnd;
   }
 
   Range<DateTime> get getWeekDateRange {
@@ -108,5 +110,19 @@ extension DateTimeExtension on DateTime {
     }
 
     return '${day.toString().padLeft(2, '0')}/${month.toString().padLeft(2, '0')}/$year';
+  }
+
+  // Examples: 09:00, 14:30, 13:03, 00:15
+  String get toTime {
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  }
+
+  // Examples: 01/09, 15/12, 23/06
+  String get toMonthDay {
+    return '${day.toString().padLeft(2, '0')}/${month.toString().padLeft(2, '0')}';
+  }
+
+  DateTime get dayEnd {
+    return DateTime(year, month, day, 23, 59, 59, 999);
   }
 }

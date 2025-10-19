@@ -56,7 +56,7 @@ class WeekViewTranslations {
   static const String setTime = 'Definir horário';
 
   static const String dialogTitle = 'Adicionar evento';
-  static const String eventTitle = 'Título do evento';
+  static const String eventTitle = 'Título';
   static const String eventDate = 'Data';
   static const String eventTime = 'Horário';
   static const String eventDescription = 'Descrição';
@@ -70,7 +70,7 @@ class WeekTasksTranslations {
   static const String hasTime = 'Tem horário';
 
   static const String dialogTitle = 'Adicionar tarefa';
-  static const String taskTitle = 'Título da tarefa';
+  static const String taskTitle = 'Título';
   static const String taskDescription = 'Descrição';
   static const String taskDeadline = 'Prazo';
   static const String taskSave = 'Salvar';

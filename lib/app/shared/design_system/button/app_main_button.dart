@@ -21,7 +21,10 @@ class AppMainButton extends StatelessWidget {
     return ElevatedButton(
       style: _getStyle(context: context),
       onPressed: onPressed,
-      child: AppText(text: labelText),
+      child: AppText(
+        text: labelText,
+        color: _getTextColor(context: context),
+      ),
     );
   }
 
@@ -68,6 +71,21 @@ class AppMainButton extends StatelessWidget {
             ),
           ),
         );
+    }
+  }
+
+  Color _getTextColor({required BuildContext context}) {
+    final theme = Theme.of(context);
+
+    switch (buttonType) {
+      case EButtonType.primary:
+        return theme.colorScheme.onPrimary;
+      case EButtonType.secondary:
+        return theme.colorScheme.primary;
+      case EButtonType.tertiary:
+        return theme.colorScheme.onTertiary;
+      case EButtonType.text:
+        return theme.colorScheme.primary;
     }
   }
 }

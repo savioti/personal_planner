@@ -38,11 +38,14 @@ class AppDimensions {
 
   static const double cardPadding = paddingMedium;
   static const double cardBorderRadius = radiusSmall;
+
+  static const double containerBorderRadius = radiusMedium;
+
   static const double buttonPadding = paddingMedium;
   static const double inputPadding = paddingMedium;
 
   static const double weekViewDayCardLargeMinWidth = 128.0;
-  static const double weekViewWidthRatio = 0.7;
+  static const double weekViewWidthRatio = 0.725;
   static const double weekViewEventBorderRadius = 16.0;
 
   static const double weekTasksWidthRatio = 0.25;
@@ -60,4 +63,9 @@ class AppDimensions {
 
   static const double checkboxBorderRadius = 6.0;
   static const double checkboxSize = 24.0;
+
+  static const double weekViewTaskItemHeight = 32.0;
+  static const double weekViewVerticalDividerWidth = 16.0;
+  static const double weekViewHorizontalDividerLength = 32.0;
+  static const double weekViewItemUnderlineThickness = 2.0;
 }

@@ -13,16 +13,21 @@ import 'package:personal_planner/app/shared/design_system/text_field/app_time_te
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
-class WeekViewAddEventDialog extends StatefulWidget {
+class AddEventDialog extends StatefulWidget {
   final VoidCallback onEventAdded;
+  final DateTime? initialDate;
 
-  const WeekViewAddEventDialog({super.key, required this.onEventAdded});
+  const AddEventDialog({
+    super.key,
+    required this.onEventAdded,
+    this.initialDate,
+  });
 
   @override
-  State<WeekViewAddEventDialog> createState() => _WeekViewAddEventDialogState();
+  State<AddEventDialog> createState() => _AddEventDialogState();
 }
 
-class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
+class _AddEventDialogState extends State<AddEventDialog> {
   final _eventController = serviceLocator.get<EventController>();
 
   final _eventTitleTextController = TextEditingController();
@@ -45,37 +50,40 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: AppDimensions.dialogMaxWidth),
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.cardPadding),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(AppDimensions.dialogBorderRadius),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline,
-            width: AppDimensions.dialogBorderWidth,
+      child: IntrinsicHeight(
+        child: Dialog(
+          child: Container(
+            padding: const EdgeInsets.all(AppDimensions.cardPadding),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                AppDimensions.dialogBorderRadius,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTitle(theme: theme),
+                const VerticalGap(),
+                _buildTextFields(),
+                const VerticalGap.large(),
+                _buildActionButtons(context: context),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTitle(),
-            const VerticalGap(),
-            _buildTextFields(),
-            const VerticalGap.large(),
-            _buildActionButtons(context: context),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle({required ThemeData theme}) {
     return AppText(
       text: WeekViewTranslations.dialogTitle,
-      color: Theme.of(context).colorScheme.onPrimary,
-      style: AppTextStyles.displaySmall().copyWith(),
+      color: theme.colorScheme.onPrimaryContainer,
+      style: theme.textTheme.displaySmall,
     );
   }
 
@@ -87,8 +95,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: WeekViewTranslations.eventTitle,
-              color: Theme.of(context).colorScheme.onPrimary,
+              text: '${WeekViewTranslations.eventTitle}:',
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -102,8 +109,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: WeekViewTranslations.eventDate,
-              color: Theme.of(context).colorScheme.onPrimary,
+              text: '${WeekViewTranslations.eventDate}:',
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -117,8 +123,7 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
-              text: WeekViewTranslations.eventTime,
-              color: Theme.of(context).colorScheme.onPrimary,
+              text: '${WeekViewTranslations.eventTime}:',
               style: AppTextStyles.bodyMedium(),
             ),
             const HorizontalGap.small(),
@@ -197,8 +202,10 @@ class _WeekViewAddEventDialogState extends State<WeekViewAddEventDialog> {
 
   void _initFieldsWithDefaultValues() {
     final now = DateTime.now().roundToNearestQuarterHour;
+    final targetDate = widget.initialDate?.roundToNearestQuarterHour ?? now;
+
     _eventDateTextController.text =
-        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        '${targetDate.year.toString().padLeft(4, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
     _eventTimeTextController.text =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
   }

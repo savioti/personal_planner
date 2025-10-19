@@ -4,19 +4,15 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
-import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_add_event_dialog.dart';
-import 'package:personal_planner/app/modules/events/presentation/widgets/week_view_day_widget.dart';
+import 'package:personal_planner/app/modules/week_view/presentation/widgets/add_event_dialog.dart';
+import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_widget.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/utils/task_utils.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
-import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
-import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
-import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/e_weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
-import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
 class WeekviewWidget extends ConsumerWidget {
   WeekviewWidget({super.key});
@@ -29,6 +25,7 @@ class WeekviewWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
     final weekDateRange = ref.watch(
@@ -40,16 +37,16 @@ class WeekviewWidget extends ConsumerWidget {
     final weekTasksAsync = ref.watch(_tasksController.tasksProvider);
 
     return Container(
+      padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
       width: AppDimensions.weekViewWidthRatio * screenWidth,
-      padding: const EdgeInsets.all(AppDimensions.cardPadding),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(
+          AppDimensions.containerBorderRadius,
+        ),
       ),
       child: Column(
         children: [
-          _buildHeader(context: context, ref: ref),
-          const VerticalGap.small(),
           Expanded(
             child: weekEventsAsync.when(
               loading: () {
@@ -83,37 +80,6 @@ class WeekviewWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader({required BuildContext context, required WidgetRef ref}) {
-    final theme = Theme.of(context);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        AppText(
-          text: WeekViewTranslations.title,
-          color: theme.colorScheme.onPrimary,
-          style: AppTextStyles.titleMedium(),
-        ),
-        AppIconButton(
-          iconData: Icons.add,
-          color: Theme.of(context).colorScheme.onPrimary,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return Dialog(
-                  child: WeekViewAddEventDialog(
-                    onEventAdded: () => _onEventAdded(ref),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildWeekDays({
     required BuildContext context,
     required List<EventEntity> events,
@@ -138,8 +104,9 @@ class WeekviewWidget extends ConsumerWidget {
                 final tasks = tasksByDay[date] ?? [];
                 final weekday = EWeekday.values[index];
 
-                return WeekviewDayWidget(
+                return WeekViewDayWidget(
                   title: WeekdayTranslations.getWeekDayNameByIndex(index),
+                  date: date,
                   weekday: weekday,
                   events: events,
                   tasks: tasks,
@@ -149,12 +116,35 @@ class WeekviewWidget extends ConsumerWidget {
                       _completeTask(taskId: taskId, ref: ref),
                   onTaskDelete: (taskId) =>
                       _deleteTask(taskId: taskId, ref: ref),
+                  onTapAddEvent: () => _showAddEventDialog(
+                    ref: ref,
+                    context: context,
+                    initialDate: date,
+                  ),
                 );
               }),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showAddEventDialog({
+    required WidgetRef ref,
+    required BuildContext context,
+    DateTime? initialDate,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: AddEventDialog(
+            initialDate: initialDate,
+            onEventAdded: () => _onEventAdded(ref),
+          ),
+        );
+      },
     );
   }
 
@@ -170,7 +160,11 @@ class WeekviewWidget extends ConsumerWidget {
     ref.invalidate(_eventController.weekEventsProvider);
   }
 
-  void _completeTask({required String taskId, required WidgetRef ref}) {
+  Future<void> _completeTask({
+    required String taskId,
+    required WidgetRef ref,
+  }) async {
+    await _tasksController.completeTask(taskId: taskId);
     ref.invalidate(_tasksController.tasksProvider);
   }
 
