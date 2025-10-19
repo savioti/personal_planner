@@ -21,7 +21,6 @@ class WeekViewDayWidget extends StatelessWidget {
   final List<TaskEntity> tasks;
   final Function(String eventId) onEventDelete;
   final Function(String taskId) onTaskComplete;
-  final Function(String taskId) onTaskDelete;
   final VoidCallback onTapAddEvent;
 
   const WeekViewDayWidget({
@@ -33,7 +32,6 @@ class WeekViewDayWidget extends StatelessWidget {
     required this.tasks,
     required this.onEventDelete,
     required this.onTaskComplete,
-    required this.onTaskDelete,
     required this.onTapAddEvent,
   });
 
