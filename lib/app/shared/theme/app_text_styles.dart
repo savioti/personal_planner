@@ -7,6 +7,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 32.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -15,6 +16,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 28.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -23,6 +25,16 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 24.0,
       fontWeight: FontWeight.w700,
+      color: color,
+    );
+  }
+
+  static TextStyle displayTiny({Color? color}) {
+    return TextStyle(
+      fontFamily: FontFamilies.displayFontFamily,
+      fontSize: 18.0,
+      fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -31,6 +43,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 22.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -39,6 +52,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 18.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -47,6 +61,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.displayFontFamily,
       fontSize: 16.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -55,6 +70,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 16.0,
       fontWeight: FontWeight.w400,
+      color: color,
     );
   }
 
@@ -63,6 +79,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 14.0,
       fontWeight: FontWeight.w400,
+      color: color,
     );
   }
 
@@ -71,6 +88,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 12.0,
       fontWeight: FontWeight.w400,
+      color: color,
     );
   }
 
@@ -79,6 +97,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 16.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -87,6 +106,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 14.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 
@@ -95,6 +115,7 @@ class AppTextStyles {
       fontFamily: FontFamilies.defaultFontFamily,
       fontSize: 12.0,
       fontWeight: FontWeight.w700,
+      color: color,
     );
   }
 }

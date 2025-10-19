@@ -1,1 +1,0 @@
-class TranslationNotFoundException implements Exception {}

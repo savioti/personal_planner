@@ -10,6 +10,11 @@ class Failure {
 
   @override
   int get hashCode => 0;
+
+  @override
+  String toString() {
+    return 'Failure(message: $message)';
+  }
 }
 
 class UnexpectedFailure extends Failure {

@@ -1,0 +1,122 @@
+import 'package:flutter/material.dart';
+import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
+import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
+import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
+import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
+import 'package:personal_planner/app/shared/design_system/checkbox/app_checkbox.dart';
+import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
+import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
+import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
+
+class TaskWidget extends StatelessWidget {
+  final TaskEntity task;
+  final Function(String eventId) onComplete;
+  final Function(String eventId) onDelete;
+  final bool displayVertically;
+
+  const TaskWidget({
+    super.key,
+    required this.task,
+    required this.onComplete,
+    required this.onDelete,
+    this.displayVertically = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: displayVertically
+            ? AppDimensions.paddingSmall
+            : AppDimensions.paddingMedium,
+        vertical: AppDimensions.paddingSmall,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(
+          AppDimensions.weekViewEventBorderRadius,
+        ),
+      ),
+      child: Builder(
+        builder: (context) {
+          if (displayVertically) {
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    _buildCheckbox(colorScheme: theme.colorScheme),
+                    const SizedBox(width: AppDimensions.spacingSmall),
+                    AppText(
+                      text: task.title,
+                      color: theme.colorScheme.onPrimary,
+                      style: AppTextStyles.bodySmall(),
+                    ),
+                    const Spacer(),
+                    _buildDeleteButton(),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              _buildCheckbox(colorScheme: theme.colorScheme),
+              const SizedBox(width: AppDimensions.spacingSmall),
+              Expanded(
+                child: AppText(
+                  text: task.title,
+                  color: theme.colorScheme.onPrimary,
+                  style: AppTextStyles.bodySmallBold(),
+                ),
+              ),
+              _buildDeadline(),
+              const SizedBox(width: AppDimensions.spacingSmall),
+              _buildDeleteButton(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCheckbox({required ColorScheme colorScheme}) {
+    return AppCheckbox(
+      value: task.isDone,
+      onChanged: (_) => _onCompleteChanged(),
+    );
+  }
+
+  Widget _buildDeadline() {
+    if (task.deadline == null) {
+      return const SizedBox();
+    }
+
+    return AppText(
+      text: task.deadline!.toHumanReadableNextDate,
+      style: AppTextStyles.bodySmall(),
+    );
+  }
+
+  Widget _buildDeleteButton() {
+    return AppIconButton(
+      iconData: Icons.delete,
+      onPressed: () => _onDeletePressed(),
+    );
+  }
+
+  void _onCompleteChanged() async {
+    final taskId = task.id;
+    await serviceLocator.get<TasksController>().completeTask(taskId: taskId);
+    onComplete(taskId);
+  }
+
+  void _onDeletePressed() async {
+    final taskId = task.id;
+    await serviceLocator.get<TasksController>().deleteTask(taskId: taskId);
+    onDelete(taskId);
+  }
+}
