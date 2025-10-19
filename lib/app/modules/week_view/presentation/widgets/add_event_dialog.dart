@@ -175,6 +175,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
     final day = int.tryParse(splitDate[2]);
 
     final splitTime = time.split(':');
+
+    if (splitTime.length != 2) {
+      return;
+    }
+
     final hour = splitTime[0];
     final minute = splitTime[1];
 
