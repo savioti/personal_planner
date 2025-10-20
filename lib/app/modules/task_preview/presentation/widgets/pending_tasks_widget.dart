@@ -58,7 +58,7 @@ class PendingTasksWidget extends ConsumerWidget {
         AppText(
           text: WeekTasksTranslations.title,
           color: theme.colorScheme.onPrimaryContainer,
-          style: AppTextStyles.titleMedium(),
+          style: theme.textTheme.titleMedium,
         ),
         const Spacer(),
         AppIconButton(

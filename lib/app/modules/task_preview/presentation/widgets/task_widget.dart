@@ -3,7 +3,6 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
-import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/checkbox/app_checkbox.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
@@ -13,14 +12,12 @@ class TaskWidget extends StatelessWidget {
   final TaskEntity task;
   final Function(String eventId) onComplete;
   final Function(String eventId) onDelete;
-  final bool displayVertically;
 
   const TaskWidget({
     super.key,
     required this.task,
     required this.onComplete,
     required this.onDelete,
-    this.displayVertically = false,
   });
 
   @override
@@ -29,9 +26,7 @@ class TaskWidget extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: displayVertically
-            ? AppDimensions.paddingSmall
-            : AppDimensions.paddingMedium,
+        horizontal: AppDimensions.paddingMedium,
         vertical: AppDimensions.paddingSmall,
       ),
       decoration: BoxDecoration(
@@ -42,26 +37,6 @@ class TaskWidget extends StatelessWidget {
       ),
       child: Builder(
         builder: (context) {
-          if (displayVertically) {
-            return Column(
-              children: [
-                Row(
-                  children: [
-                    _buildCheckbox(colorScheme: theme.colorScheme),
-                    const SizedBox(width: AppDimensions.spacingSmall),
-                    AppText(
-                      text: task.title,
-                      color: theme.colorScheme.onPrimary,
-                      style: AppTextStyles.bodySmall(),
-                    ),
-                    const Spacer(),
-                    _buildDeleteButton(),
-                  ],
-                ),
-              ],
-            );
-          }
-
           return Row(
             children: [
               _buildCheckbox(colorScheme: theme.colorScheme),
@@ -100,22 +75,9 @@ class TaskWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDeleteButton() {
-    return AppIconButton(
-      iconData: Icons.delete,
-      onPressed: () => _onDeletePressed(),
-    );
-  }
-
   void _onCompleteChanged() async {
     final taskId = task.id;
     await serviceLocator.get<TasksController>().completeTask(taskId: taskId);
     onComplete(taskId);
-  }
-
-  void _onDeletePressed() async {
-    final taskId = task.id;
-    await serviceLocator.get<TasksController>().deleteTask(taskId: taskId);
-    onDelete(taskId);
   }
 }

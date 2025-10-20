@@ -15,7 +15,7 @@ import 'package:personal_planner/app/shared/design_system/button/app_icon_button
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
-import 'package:personal_planner/app/shared/enums/e_weekday.dart';
+import 'package:personal_planner/app/shared/enums/weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
 class WeekViewWidget extends ConsumerWidget {
@@ -137,7 +137,7 @@ class WeekViewWidget extends ConsumerWidget {
                 final date = daysOfTheWeek[index];
                 final events = eventsByDay[date] ?? [];
                 final tasks = tasksByDay[date] ?? [];
-                final weekday = EWeekday.values[index];
+                final weekday = Weekday.values[index];
 
                 return WeekViewDayWidget(
                   title: WeekdayTranslations.getWeekDayNameByIndex(index),

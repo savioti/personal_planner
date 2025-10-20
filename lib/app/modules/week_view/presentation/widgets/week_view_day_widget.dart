@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/add_event_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_section_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_title_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_widget.dart';
@@ -10,12 +9,12 @@ import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/areas/disabled_area.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
-import 'package:personal_planner/app/shared/enums/e_weekday.dart';
+import 'package:personal_planner/app/shared/enums/weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
 class WeekViewDayWidget extends StatelessWidget {
   final String title;
-  final EWeekday weekday;
+  final Weekday weekday;
   final DateTime date;
   final List<EventEntity> events;
   final List<TaskEntity> tasks;
@@ -85,16 +84,16 @@ class WeekViewDayWidget extends StatelessWidget {
             ListView.separated(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: events.length + 1,
+              itemCount: events.length,
               separatorBuilder: (_, index) => VerticalGap.small(),
               itemBuilder: (_, index) {
-                if (index == events.length) {
-                  if (date.isBefore(DateTime.now().toDateOnly)) {
-                    return SizedBox.shrink();
-                  }
+                // if (index == events.length) {
+                //   if (date.isBefore(DateTime.now().toDateOnly)) {
+                //     return SizedBox.shrink();
+                //   }
 
-                  return AddEventWidget(onTap: onTapAddEvent);
-                }
+                //   return AddEventWidget(onTap: onTapAddEvent);
+                // }
 
                 final event = events[index];
                 return EventWidget(event: event);

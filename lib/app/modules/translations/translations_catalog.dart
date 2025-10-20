@@ -81,6 +81,16 @@ class WeekTasksTranslations {
   static const String backlogTasksTitle = 'Algum dia';
 }
 
+class ExtraFeaturesTranslations {
+  static const String title = 'Extras';
+  static const String shoppingList = 'Lista de compras';
+  static const String finances = 'Finanças';
+  static const String dayDiary = 'Diário';
+  static const String travelChecklist = 'Lista de Viagem';
+  static const String mealPlan = 'Plano de Refeições';
+  static const String settings = 'Configurações';
+}
+
 class TravelChecklistTranslations {
   static const String title = 'Lista de Viagem';
   static const String templates = 'Modelos';
@@ -92,4 +102,9 @@ class DayDiaryTranslations {
   static const String title = 'Diário';
   static const String requirePassword = 'Exigir senha';
   static const String dateTime = 'Data e Hora';
+}
+
+class SettingsTranslations {
+  static const String title = 'Configurações';
+  static const String theme = 'Tema';
 }

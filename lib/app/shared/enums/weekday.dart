@@ -1,4 +1,4 @@
-enum EWeekday {
+enum Weekday {
   monday(),
   tuesday(),
   wednesday(),
@@ -10,19 +10,19 @@ enum EWeekday {
   @override
   String toString() {
     switch (this) {
-      case EWeekday.monday:
+      case Weekday.monday:
         return 'monday';
-      case EWeekday.tuesday:
+      case Weekday.tuesday:
         return 'tuesday';
-      case EWeekday.wednesday:
+      case Weekday.wednesday:
         return 'wednesday';
-      case EWeekday.thursday:
+      case Weekday.thursday:
         return 'thursday';
-      case EWeekday.friday:
+      case Weekday.friday:
         return 'friday';
-      case EWeekday.saturday:
+      case Weekday.saturday:
         return 'saturday';
-      case EWeekday.sunday:
+      case Weekday.sunday:
         return 'sunday';
     }
   }
