@@ -11,6 +11,10 @@ import 'package:personal_planner/app/modules/tasks/domain/utils/task_utils.dart'
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
+import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
+import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
+import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/e_weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
@@ -47,6 +51,8 @@ class WeekViewWidget extends ConsumerWidget {
       ),
       child: Column(
         children: [
+          _buildHeader(theme: theme, ref: ref),
+          const VerticalGap.medium(),
           Expanded(
             child: weekEventsAsync.when(
               loading: () {
@@ -77,6 +83,35 @@ class WeekViewWidget extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeader({required ThemeData theme, required WidgetRef ref}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        AppText(
+          text: WeekViewTranslations.title,
+          color: theme.colorScheme.onPrimaryContainer,
+          style: theme.textTheme.titleMedium,
+        ),
+        const Spacer(),
+        AppIconButton(
+          iconData: Icons.refresh_outlined,
+          color: theme.colorScheme.onPrimaryContainer,
+          onPressed: () {
+            _refreshWeekView(ref: ref);
+          },
+        ),
+        HorizontalGap.small(),
+        AppIconButton(
+          iconData: Icons.add_circle_outline_outlined,
+          color: theme.colorScheme.onPrimaryContainer,
+          onPressed: () {
+            _showAddEventDialog(ref: ref, context: ref.context);
+          },
+        ),
+      ],
     );
   }
 
@@ -163,6 +198,11 @@ class WeekViewWidget extends ConsumerWidget {
     required WidgetRef ref,
   }) async {
     await _tasksController.completeTask(taskId: taskId);
+    ref.invalidate(_tasksController.weekTasksProvider);
+  }
+
+  void _refreshWeekView({required WidgetRef ref}) {
+    ref.invalidate(_eventController.weekEventsProvider);
     ref.invalidate(_tasksController.weekTasksProvider);
   }
 }

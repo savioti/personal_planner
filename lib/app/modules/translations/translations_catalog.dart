@@ -51,7 +51,7 @@ class MonthTranslations {
 }
 
 class WeekViewTranslations {
-  static const String title = 'Eventos';
+  static const String title = 'Planejamento Semanal';
   static const String setDate = 'Definir data';
   static const String setTime = 'Definir horário';
 
