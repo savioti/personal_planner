@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/pending_tasks_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,7 +14,29 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(AppDimensions.paddingLarge),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [WeekviewWidget(), PendingTasksWidget()],
+          children: [
+            _buildExtraFeatures(context: context),
+            HorizontalGap.large(),
+            WeekViewWidget(),
+            HorizontalGap.large(),
+            PendingTasksWidget(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExtraFeatures({required BuildContext context}) {
+    final theme = Theme.of(context);
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(
+            AppDimensions.containerBorderRadius,
+          ),
         ),
       ),
     );

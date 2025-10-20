@@ -14,8 +14,8 @@ import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/enums/e_weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
-class WeekviewWidget extends ConsumerWidget {
-  WeekviewWidget({super.key});
+class WeekViewWidget extends ConsumerWidget {
+  WeekViewWidget({super.key});
 
   final int _daysInWeek = 7;
   final EventController _eventController = serviceLocator
@@ -34,7 +34,7 @@ class WeekviewWidget extends ConsumerWidget {
     final weekEventsAsync = ref.watch(
       _eventController.weekEventsProvider(weekDateRange),
     );
-    final weekTasksAsync = ref.watch(_tasksController.tasksProvider);
+    final weekTasksAsync = ref.watch(_tasksController.weekTasksProvider);
 
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
@@ -163,6 +163,6 @@ class WeekviewWidget extends ConsumerWidget {
     required WidgetRef ref,
   }) async {
     await _tasksController.completeTask(taskId: taskId);
-    ref.invalidate(_tasksController.tasksProvider);
+    ref.invalidate(_tasksController.weekTasksProvider);
   }
 }

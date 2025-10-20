@@ -73,9 +73,7 @@ class TaskWidget extends StatelessWidget {
                   style: AppTextStyles.bodySmallBold(),
                 ),
               ),
-              _buildDeadline(),
-              const SizedBox(width: AppDimensions.spacingSmall),
-              _buildDeleteButton(),
+              _buildDeadline(theme: theme),
             ],
           );
         },
@@ -90,13 +88,14 @@ class TaskWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDeadline() {
+  Widget _buildDeadline({required ThemeData theme}) {
     if (task.deadline == null) {
       return const SizedBox();
     }
 
     return AppText(
       text: task.deadline!.toHumanReadableNextDate,
+      color: theme.colorScheme.onPrimary,
       style: AppTextStyles.bodySmall(),
     );
   }

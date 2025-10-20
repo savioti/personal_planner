@@ -5,6 +5,7 @@ import 'package:personal_planner/app/modules/tasks/data/requests/add_task_reques
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 
 class TasksFirestoreDatasourceImpl implements TasksDatasource {
@@ -94,22 +95,34 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
   ) async {
     try {
       final col = _firestore.collection('tasks');
-      Query<Map<String, dynamic>> query = col;
 
-      query = query.where(
-        'deadline',
-        isLessThan: Timestamp.fromDate(request.before),
-      );
+      final fromTimestamp = Timestamp.fromDate(request.from);
 
-      query = query.where('is_done', isEqualTo: false);
+      final qNoDeadline = col
+          .where('is_done', isEqualTo: false)
+          .where('deadline', isNull: true);
 
-      final querySnap = await query.get();
-      final tasks = <TaskModel>[];
+      final qWithDeadlineAfter = col
+          .where('is_done', isEqualTo: false)
+          .where('deadline', isGreaterThan: fromTimestamp);
 
-      for (final docSnap in querySnap.docs) {
-        final data = docSnap.data();
-        tasks.add(TaskModel.fromMap({...data, 'id': docSnap.id}));
+      final results = await Future.wait([
+        qNoDeadline.get(),
+        qWithDeadlineAfter.get(),
+      ]);
+
+      final Map<String, QueryDocumentSnapshot<Map<String, dynamic>>>
+      uniqueDocs = {};
+
+      for (final snap in results) {
+        for (final doc in snap.docs) {
+          uniqueDocs[doc.id] = doc;
+        }
       }
+
+      final tasks = uniqueDocs.values
+          .map((doc) => TaskModel.fromMap({...doc.data(), 'id': doc.id}))
+          .toList();
 
       return tasks;
     } on FirebaseException catch (e) {
@@ -180,6 +193,37 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
       );
     } catch (e) {
       throw Exception('TasksFirestoreDatasourceImpl.deleteTask: $e');
+    }
+  }
+
+  @override
+  Future<List<TaskModel>> getOverdueTasks(
+    GetOverdueTasksRequest request,
+  ) async {
+    try {
+      final col = _firestore.collection('tasks');
+
+      final nowTimestamp = Timestamp.fromDate(DateTime.now().toUtc());
+
+      Query<Map<String, dynamic>> query = col
+          .where('is_done', isEqualTo: false)
+          .where('deadline', isLessThan: nowTimestamp);
+
+      final querySnap = await query.get();
+      final tasks = <TaskModel>[];
+
+      for (final docSnap in querySnap.docs) {
+        final data = docSnap.data();
+        tasks.add(TaskModel.fromMap({...data, 'id': docSnap.id}));
+      }
+
+      return tasks;
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'TasksFirestoreDatasourceImpl.getOverdueTasks - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('TasksFirestoreDatasourceImpl.getOverdueTasks: $e');
     }
   }
 }

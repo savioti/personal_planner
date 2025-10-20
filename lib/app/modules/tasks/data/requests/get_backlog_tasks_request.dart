@@ -1,5 +1,5 @@
 class GetBacklogTasksRequest {
-  final DateTime before;
+  final DateTime from;
 
-  GetBacklogTasksRequest({required this.before});
+  GetBacklogTasksRequest({required this.from});
 }

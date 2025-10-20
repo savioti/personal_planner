@@ -3,6 +3,7 @@ import 'package:personal_planner/app/modules/tasks/data/requests/add_task_reques
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 
 abstract class TasksDatasource {
@@ -15,4 +16,6 @@ abstract class TasksDatasource {
   Future<TaskModel> completeTask(CompleteTaskRequest request);
 
   Future<TaskModel> deleteTask(DeleteTaskRequest request);
+
+  Future<List<TaskModel>> getOverdueTasks(GetOverdueTasksRequest request);
 }

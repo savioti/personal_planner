@@ -17,48 +17,33 @@ class PendingTasksWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
-
-    final weekEventsAsync = ref.watch(_controller.tasksProvider);
 
     return Container(
       width: AppDimensions.weekTasksWidthRatio * screenWidth,
-      padding: const EdgeInsets.all(AppDimensions.cardPadding),
+      height: double.maxFinite,
+      padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(
+          AppDimensions.containerBorderRadius,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context: context, ref: ref),
-          const SizedBox(height: AppDimensions.spacingSmall),
-          weekEventsAsync.when(
-            loading: () {
-              return const Center(child: CircularProgressIndicator());
-            },
-            error: (error, _) {
-              return Center(child: Text('Error: $error'));
-            },
-            data: (tasks) {
-              return Expanded(
-                child: ListView.separated(
-                  itemCount: tasks.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: AppDimensions.spacingSmall),
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    return TaskWidget(
-                      task: task,
-                      onComplete: (_) => _onCompleteChanged(ref: ref),
-                      onDelete: (_) => _onDeletePressed(ref: ref),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context: context, ref: ref),
+            const SizedBox(height: AppDimensions.spacingSmall),
+            _buildOverdueTasksList(ref: ref, theme: theme),
+            const SizedBox(height: AppDimensions.spacingMedium),
+            _buildWeekTasksList(ref: ref, theme: theme),
+            const SizedBox(height: AppDimensions.spacingMedium),
+            _buildBacklogTasksList(ref: ref, theme: theme),
+          ],
+        ),
       ),
     );
   }
@@ -69,12 +54,12 @@ class PendingTasksWidget extends ConsumerWidget {
       children: [
         AppText(
           text: WeekTasksTranslations.title,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
           style: AppTextStyles.titleMedium(),
         ),
         AppIconButton(
-          iconData: Icons.add,
-          color: Theme.of(context).colorScheme.onPrimary,
+          iconData: Icons.add_circle_outline_outlined,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
           onPressed: () {
             showDialog(
               context: context,
@@ -92,15 +77,190 @@ class PendingTasksWidget extends ConsumerWidget {
     );
   }
 
+  Widget _buildOverdueTasksList({
+    required WidgetRef ref,
+    required ThemeData theme,
+  }) {
+    final overdueTasksAsync = ref.watch(_controller.overdueTasksProvider);
+
+    return overdueTasksAsync.when(
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, _) {
+        return Center(child: Text('Error: $error'));
+      },
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return const SizedBox();
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(
+              AppDimensions.containerBorderRadius,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: WeekTasksTranslations.overdueTasksTitle,
+                color: theme.colorScheme.onPrimaryContainer,
+                style: AppTextStyles.titleSmall(),
+              ),
+              const SizedBox(height: AppDimensions.spacingSmall),
+              ListView.separated(
+                itemCount: tasks.length,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: AppDimensions.spacingSmall),
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+
+                  return TaskWidget(
+                    task: task,
+                    onComplete: (_) => _onCompleteChanged(ref: ref),
+                    onDelete: (_) => _onDeletePressed(ref: ref),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWeekTasksList({
+    required WidgetRef ref,
+    required ThemeData theme,
+  }) {
+    final weekTasksAsync = ref.watch(_controller.weekTasksProvider);
+
+    return weekTasksAsync.when(
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, _) {
+        return Center(child: Text('Error: $error'));
+      },
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return const SizedBox();
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(
+              AppDimensions.containerBorderRadius,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: WeekTasksTranslations.thisWeekTasksTitle,
+                color: theme.colorScheme.onPrimaryContainer,
+                style: AppTextStyles.titleSmall(),
+              ),
+              const SizedBox(height: AppDimensions.spacingSmall),
+              ListView.separated(
+                itemCount: tasks.length,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: AppDimensions.spacingSmall),
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+
+                  return TaskWidget(
+                    task: task,
+                    onComplete: (_) => _onCompleteChanged(ref: ref),
+                    onDelete: (_) => _onDeletePressed(ref: ref),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBacklogTasksList({
+    required WidgetRef ref,
+    required ThemeData theme,
+  }) {
+    final backlogTasksAsync = ref.watch(_controller.backlogTasksProvider);
+
+    return backlogTasksAsync.when(
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, _) {
+        return Center(child: Text('Error: $error'));
+      },
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return const SizedBox();
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(
+              AppDimensions.containerBorderRadius,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: WeekTasksTranslations.backlogTasksTitle,
+                color: theme.colorScheme.onPrimaryContainer,
+                style: AppTextStyles.titleSmall(),
+              ),
+              const SizedBox(height: AppDimensions.spacingSmall),
+              ListView.separated(
+                itemCount: tasks.length,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: AppDimensions.spacingSmall),
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return TaskWidget(
+                    task: task,
+                    onComplete: (_) => _onCompleteChanged(ref: ref),
+                    onDelete: (_) => _onDeletePressed(ref: ref),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _onTaskAdded({required WidgetRef ref}) {
-    ref.invalidate(_controller.tasksProvider);
+    ref.invalidate(_controller.weekTasksProvider);
+    ref.invalidate(_controller.backlogTasksProvider);
+    ref.invalidate(_controller.overdueTasksProvider);
   }
 
   void _onCompleteChanged({required WidgetRef ref}) {
-    ref.invalidate(_controller.tasksProvider);
+    ref.invalidate(_controller.weekTasksProvider);
   }
 
   void _onDeletePressed({required WidgetRef ref}) {
-    ref.invalidate(_controller.tasksProvider);
+    ref.invalidate(_controller.weekTasksProvider);
   }
 }

@@ -4,6 +4,7 @@ import 'package:personal_planner/app/modules/tasks/data/requests/add_task_reques
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/repositories/tasks_repository.dart';
@@ -95,6 +96,24 @@ class TasksRepositoryImpl implements TasksRepository {
         Failure(
           message:
               'TasksRepositoryImpl.deleteTask - Failed to delete task: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TaskEntity>>> getOverdueTasks(
+    GetOverdueTasksRequest request,
+  ) async {
+    try {
+      final taskModels = await _datasource.getOverdueTasks(request);
+      final taskEntities = taskModels.map((model) => model.toEntity()).toList();
+      return Right(taskEntities);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksRepositoryImpl.getOverdueTasks - Failed to get overdue tasks: ${e.toString()}',
         ),
       );
     }

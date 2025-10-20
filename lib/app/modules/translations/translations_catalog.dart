@@ -75,6 +75,10 @@ class WeekTasksTranslations {
   static const String taskDeadline = 'Prazo';
   static const String taskSave = 'Salvar';
   static const String taskDiscard = 'Descartar';
+
+  static const String overdueTasksTitle = 'Atrasadas';
+  static const String thisWeekTasksTitle = 'Para esta semana';
+  static const String backlogTasksTitle = 'Algum dia';
 }
 
 class TravelChecklistTranslations {

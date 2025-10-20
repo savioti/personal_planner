@@ -6,6 +6,7 @@ import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_r
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_all_pending_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
@@ -13,6 +14,7 @@ import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task
 import 'package:personal_planner/app/modules/tasks/domain/usecases/delete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/get_overdue_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_tasks_usecase.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
@@ -24,6 +26,7 @@ class TasksController {
   final GetBacklogTasksRequestUsecase _getBacklogTasksRequestUsecase;
   final CompleteTaskUsecase _completeTaskUsecase;
   final DeleteTaskUsecase _deleteTaskUsecase;
+  final GetOverdueTasksUsecase _getOverdueTasksUsecase;
 
   TasksController({
     required AddTaskUsecase addTaskUsecase,
@@ -32,17 +35,21 @@ class TasksController {
     required GetBacklogTasksRequestUsecase getBacklogTasksRequestUsecase,
     required CompleteTaskUsecase completeTaskUsecase,
     required DeleteTaskUsecase deleteTaskUsecase,
+    required GetOverdueTasksUsecase getOverdueTasksUsecase,
   }) : _addTaskUsecase = addTaskUsecase,
        _getTasksUsecase = getTasksUsecase,
        _getAllPendingTasksUsecase = getAllPendingTasksUsecase,
        _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase,
        _completeTaskUsecase = completeTaskUsecase,
-       _deleteTaskUsecase = deleteTaskUsecase {
+       _deleteTaskUsecase = deleteTaskUsecase,
+       _getOverdueTasksUsecase = getOverdueTasksUsecase {
     _initializeProviders();
   }
 
   late final Provider<TasksController> taskControllerProvider;
-  late final FutureProvider<List<TaskEntity>> tasksProvider;
+  late final FutureProvider<List<TaskEntity>> weekTasksProvider;
+  late final FutureProvider<List<TaskEntity>> backlogTasksProvider;
+  late final FutureProvider<List<TaskEntity>> overdueTasksProvider;
 
   Future<Either<Failure, TaskEntity>> addTask({
     required String title,
@@ -107,7 +114,7 @@ class TasksController {
   ) async {
     try {
       return await _getBacklogTasksRequestUsecase(
-        GetBacklogTasksRequest(before: before),
+        GetBacklogTasksRequest(from: before),
       );
     } catch (e) {
       return Left(
@@ -151,13 +158,50 @@ class TasksController {
     }
   }
 
+  Future<Either<Failure, List<TaskEntity>>> getOverdueTasks(
+    DateTime before,
+  ) async {
+    try {
+      return await _getOverdueTasksUsecase(
+        GetOverdueTasksRequest(before: before),
+      );
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.getOverdueTasks - Failed to get overdue tasks: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
   void _initializeProviders() {
     taskControllerProvider = Provider<TasksController>((ref) {
       return serviceLocator<TasksController>();
     });
 
-    tasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
+    weekTasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
       final result = await getTasksForCurrentWeek();
+
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (tasks) => tasks,
+      );
+    });
+
+    backlogTasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
+      final now = DateTime.now();
+      final result = await getBacklogTasks(now);
+
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (tasks) => tasks,
+      );
+    });
+
+    overdueTasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
+      final now = DateTime.now();
+      final result = await getOverdueTasks(now);
 
       return result.fold(
         (failure) => throw Exception(failure.message),
