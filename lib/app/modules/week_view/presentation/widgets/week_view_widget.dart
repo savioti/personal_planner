@@ -30,7 +30,6 @@ class WeekViewWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
 
     final weekDateRange = ref.watch(
       _eventController.currentWeekDateRangeProvider,
@@ -42,7 +41,6 @@ class WeekViewWidget extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
-      width: AppDimensions.weekViewWidthRatio * screenWidth,
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(
@@ -53,33 +51,31 @@ class WeekViewWidget extends ConsumerWidget {
         children: [
           _buildHeader(theme: theme, ref: ref),
           const VerticalGap.medium(),
-          Expanded(
-            child: weekEventsAsync.when(
-              loading: () {
-                return const Center(child: CircularProgressIndicator());
-              },
-              error: (error, _) {
-                return Center(child: Text('Error: $error'));
-              },
-              data: (events) {
-                return weekTasksAsync.when(
-                  loading: () {
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  error: (error, _) {
-                    return Center(child: Text('Error: $error'));
-                  },
-                  data: (tasks) {
-                    return _buildWeekDays(
-                      context: context,
-                      events: events,
-                      tasks: tasks,
-                      ref: ref,
-                    );
-                  },
-                );
-              },
-            ),
+          weekEventsAsync.when(
+            loading: () {
+              return const Center(child: CircularProgressIndicator());
+            },
+            error: (error, _) {
+              return Center(child: Text('Error: $error'));
+            },
+            data: (events) {
+              return weekTasksAsync.when(
+                loading: () {
+                  return const Center(child: CircularProgressIndicator());
+                },
+                error: (error, _) {
+                  return Center(child: Text('Error: $error'));
+                },
+                data: (tasks) {
+                  return _buildWeekDays(
+                    context: context,
+                    events: events,
+                    tasks: tasks,
+                    ref: ref,
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
@@ -125,41 +121,37 @@ class WeekViewWidget extends ConsumerWidget {
     final tasksByDay = TaskUtils.groupTasksByDay(tasks);
     final daysOfTheWeek = DateTime.now().getDaysOfTheWeek();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(_daysInWeek, (index) {
-                final date = daysOfTheWeek[index];
-                final events = eventsByDay[date] ?? [];
-                final tasks = tasksByDay[date] ?? [];
-                final weekday = Weekday.values[index];
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(_daysInWeek, (index) {
+          final date = daysOfTheWeek[index];
+          final events = eventsByDay[date] ?? [];
+          final tasks = tasksByDay[date] ?? [];
+          final weekday = Weekday.values[index];
 
-                return WeekViewDayWidget(
-                  title: WeekdayTranslations.getWeekDayNameByIndex(index),
-                  date: date,
-                  weekday: weekday,
-                  events: events,
-                  tasks: tasks,
-                  onEventDelete: (eventId) =>
-                      _deleteEvent(eventId: eventId, ref: ref),
-                  onTaskComplete: (taskId) =>
-                      _completeTask(taskId: taskId, ref: ref),
-                  onTapAddEvent: () => _showAddEventDialog(
-                    ref: ref,
-                    context: context,
-                    initialDate: date,
-                  ),
-                );
-              }),
+          return Flexible(
+            child: WeekViewDayWidget(
+              title: WeekdayTranslations.getWeekDayNameByIndex(index),
+              date: date,
+              weekday: weekday,
+              events: events,
+              tasks: tasks,
+              onEventDelete: (eventId) =>
+                  _deleteEvent(eventId: eventId, ref: ref),
+              onTaskComplete: (taskId) =>
+                  _completeTask(taskId: taskId, ref: ref),
+              onTapAddEvent: () => _showAddEventDialog(
+                ref: ref,
+                context: context,
+                initialDate: date,
+              ),
             ),
-          ),
-        ),
-      ],
+          );
+        }),
+      ),
     );
   }
 

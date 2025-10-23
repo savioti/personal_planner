@@ -38,16 +38,10 @@ class WeekViewDayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now().toDateOnly;
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final weekViewWidth = AppDimensions.weekViewWidthRatio * screenWidth;
-    final daysInAWeek = 7;
-    final weekdayCardWidth =
-        (weekViewWidth - (AppDimensions.paddingXLarge * 2)) / daysInAWeek;
 
     return DisabledArea(
       disabled: date.toDateOnly.isBefore(now),
       child: Container(
-        width: weekdayCardWidth,
         decoration: BoxDecoration(
           color: _dayColor(context: context),
           borderRadius: BorderRadius.circular(
@@ -55,51 +49,46 @@ class WeekViewDayWidget extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppText(
-              text: '$title (${date.toMonthDay})',
-              style: theme.textTheme.titleMedium,
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
-            WeekViewDayTitleDividerWidget(),
-            const VerticalGap.medium(),
-            ListView.separated(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: tasks.length,
-              separatorBuilder: (_, index) => VerticalGap.small(),
-              itemBuilder: (_, index) {
-                final task = tasks[index];
-                return TaskWidget(
-                  task: task,
-                  onComplete: () {
-                    onTaskComplete(task.id);
-                  },
-                );
-              },
-            ),
-            if (tasks.isNotEmpty) WeekViewDaySectionDividerWidget(),
-            ListView.separated(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: events.length,
-              separatorBuilder: (_, index) => VerticalGap.small(),
-              itemBuilder: (_, index) {
-                // if (index == events.length) {
-                //   if (date.isBefore(DateTime.now().toDateOnly)) {
-                //     return SizedBox.shrink();
-                //   }
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: '$title (${date.toMonthDay})',
+                style: theme.textTheme.titleMedium,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
+              WeekViewDayTitleDividerWidget(),
+              const VerticalGap.medium(),
+              ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: tasks.length,
+                separatorBuilder: (_, index) => VerticalGap.small(),
+                itemBuilder: (_, index) {
+                  final task = tasks[index];
+                  return TaskWidget(
+                    task: task,
+                    onComplete: () {
+                      onTaskComplete(task.id);
+                    },
+                  );
+                },
+              ),
+              if (tasks.isNotEmpty) WeekViewDaySectionDividerWidget(),
+              ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: events.length,
+                separatorBuilder: (_, index) => VerticalGap.small(),
+                itemBuilder: (_, index) {
+                  final event = events[index];
 
-                //   return AddEventWidget(onTap: onTapAddEvent);
-                // }
-
-                final event = events[index];
-                return EventWidget(event: event);
-              },
-            ),
-          ],
+                  return EventWidget(event: event);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
