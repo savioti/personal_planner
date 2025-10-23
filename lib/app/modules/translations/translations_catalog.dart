@@ -64,6 +64,13 @@ class WeekViewTranslations {
   static const String eventDiscard = 'Descartar';
 }
 
+class UpcomingEventsTranslations {
+  static const String title = 'Próximos Eventos';
+  static const String nextWeek = 'Próxima Semana';
+  static const String nextMonth = 'Restante do Mês';
+  static const String future = 'Futuros';
+}
+
 class WeekTasksTranslations {
   static const String title = 'Tarefas';
   static const String isIncremental = 'É incremental';

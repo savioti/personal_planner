@@ -30,6 +30,9 @@ class EventController {
   late final Provider<Range<DateTime>> currentWeekDateRangeProvider;
   late final FutureProviderFamily<List<EventEntity>, Range<DateTime>>
   weekEventsProvider;
+  late final FutureProvider<List<EventEntity>> nextWeekEventsProvider;
+  late final FutureProvider<List<EventEntity>> thisMonthEventsProvider;
+  late final FutureProvider<List<EventEntity>> futureEventsProvider;
 
   Future<Either<Failure, EventEntity>> addEvent({
     required String title,
@@ -89,12 +92,16 @@ class EventController {
   }
 
   void _initializeProviders() {
+    final today = DateTime.now();
+    final nextWeekRange = today.getNextWeekDateRange;
+    final dayAfterNextWeek = nextWeekRange.end.add(const Duration(days: 1));
+    final endOfMonth = dayAfterNextWeek.monthEnd;
+
     eventControllerProvider = Provider<EventController>((ref) {
       return serviceLocator<EventController>();
     });
 
     currentWeekDateRangeProvider = Provider<Range<DateTime>>((ref) {
-      final today = DateTime.now();
       return today.getWeekDateRange;
     });
 
@@ -111,5 +118,37 @@ class EventController {
           );
           return result.fold((failure) => throw failure, (events) => events);
         });
+
+    nextWeekEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
+      final controller = ref.watch(eventControllerProvider);
+
+      final result = await controller.getEvents(
+        dateRangeStart: nextWeekRange.start,
+        dateRangeEnd: nextWeekRange.end,
+      );
+      return result.fold((failure) => throw failure, (events) => events);
+    });
+
+    thisMonthEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
+      final controller = ref.watch(eventControllerProvider);
+
+      final result = await controller.getEvents(
+        dateRangeStart: dayAfterNextWeek,
+        dateRangeEnd: endOfMonth,
+      );
+      return result.fold((failure) => throw failure, (events) => events);
+    });
+
+    futureEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
+      final controller = ref.watch(eventControllerProvider);
+      final startOfFuture = endOfMonth.add(const Duration(days: 1));
+      final endOfFuture = startOfFuture.getNextSemesterDateRange.end;
+
+      final result = await controller.getEvents(
+        dateRangeStart: startOfFuture,
+        dateRangeEnd: endOfFuture,
+      );
+      return result.fold((failure) => throw failure, (events) => events);
+    });
   }
 }

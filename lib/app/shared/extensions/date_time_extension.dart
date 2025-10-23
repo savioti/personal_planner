@@ -69,6 +69,46 @@ extension DateTimeExtension on DateTime {
     return Range(start: startOfWeek, end: endOfWeek);
   }
 
+  Range<DateTime> get getNextWeekDateRange {
+    final startOfNextWeek = getStartOfWeek().add(const Duration(days: 7));
+    final endOfNextWeek = getEndOfWeek().add(const Duration(days: 7));
+    return Range(start: startOfNextWeek, end: endOfNextWeek);
+  }
+
+  Range<DateTime> get getCurrentMonthDateRange {
+    final startOfMonth = DateTime(year, month, 1);
+    final endOfMonth = DateTime(year, month + 1, 0).dayEnd;
+    return Range(start: startOfMonth, end: endOfMonth);
+  }
+
+  Range<DateTime> get getNextMonthDateRange {
+    final startOfNextMonth = DateTime(year, month + 1, 1);
+    final endOfNextMonth = DateTime(year, month + 2, 0).dayEnd;
+    return Range(start: startOfNextMonth, end: endOfNextMonth);
+  }
+
+  Range<DateTime> get getNextSemesterDateRange {
+    final nextSemesterStartMonth = month <= 6 ? 7 : 1;
+    final nextSemesterStartYear = month <= 6 ? year : year + 1;
+    final nextSemesterEndMonth = nextSemesterStartMonth + 5;
+    final nextSemesterEndYear = nextSemesterEndMonth > 12
+        ? nextSemesterStartYear + 1
+        : nextSemesterStartYear;
+
+    final startOfNextSemester = DateTime(
+      nextSemesterStartYear,
+      nextSemesterStartMonth,
+      1,
+    );
+    final endOfNextSemester = DateTime(
+      nextSemesterEndYear,
+      nextSemesterEndMonth + 1,
+      0,
+    ).dayEnd;
+
+    return Range(start: startOfNextSemester, end: endOfNextSemester);
+  }
+
   /// shows only the hour and minute in the format HH:MM if the date is today,
   /// if the date is tomorrow, it shows "Tomorrow HH:MM",
   /// if the date is within the interval from today to sunday of the current week,
@@ -124,5 +164,14 @@ extension DateTimeExtension on DateTime {
 
   DateTime get dayEnd {
     return DateTime(year, month, day, 23, 59, 59, 999);
+  }
+
+  DateTime get monthStart {
+    return DateTime(year, month, 1);
+  }
+
+  DateTime get monthEnd {
+    final lastDayOfMonth = DateTime(year, month + 1, 0).day;
+    return DateTime(year, month, lastDayOfMonth, 23, 59, 59, 999);
   }
 }
