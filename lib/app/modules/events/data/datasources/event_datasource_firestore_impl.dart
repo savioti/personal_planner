@@ -3,6 +3,7 @@ import 'package:personal_planner/app/modules/events/data/datasources/event_datas
 import 'package:personal_planner/app/modules/events/data/requests/add_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/models/event_model.dart';
 import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/edit_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
 
 class EventDatasourceFirestoreImpl implements EventDatasource {
@@ -96,6 +97,42 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
       );
     } catch (e) {
       throw Exception('EventFirestoreDatasourceImpl.deleteEvent: $e');
+    }
+  }
+
+  @override
+  Future<EventModel> editEvent(EditEventRequest request) async {
+    try {
+      final docRef = _firestore.collection('events').doc(request.eventId);
+      final docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        throw StateError('Document not found: ${docRef.path}');
+      }
+
+      final now = DateTime.now().toUtc();
+
+      final payload = <String, dynamic>{
+        ...request.toMap(),
+        'updated_at': Timestamp.fromDate(now),
+      };
+
+      await docRef.update(payload);
+
+      final updatedSnap = await docRef.get();
+      final data = updatedSnap.data();
+
+      if (data == null) {
+        throw StateError('Empty document ${docRef.path}');
+      }
+
+      return EventModel.fromMap({...data, 'id': docRef.id});
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'EventFirestoreDatasourceImpl.editEvent - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('EventFirestoreDatasourceImpl.editEvent: $e');
     }
   }
 }

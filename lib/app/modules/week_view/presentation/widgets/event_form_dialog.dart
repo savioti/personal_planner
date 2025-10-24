@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
+import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_main_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
@@ -13,21 +15,25 @@ import 'package:personal_planner/app/shared/design_system/text_field/app_time_te
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
-class AddEventDialog extends StatefulWidget {
-  final VoidCallback onEventAdded;
+class EventFormDialog extends StatefulWidget {
+  final VoidCallback onSave;
+  final VoidCallback? onDelete;
+  final EventEntity? event;
   final DateTime? initialDate;
 
-  const AddEventDialog({
+  const EventFormDialog({
     super.key,
-    required this.onEventAdded,
+    required this.onSave,
+    this.onDelete,
+    this.event,
     this.initialDate,
   });
 
   @override
-  State<AddEventDialog> createState() => _AddEventDialogState();
+  State<EventFormDialog> createState() => _EventFormDialogState();
 }
 
-class _AddEventDialogState extends State<AddEventDialog> {
+class _EventFormDialogState extends State<EventFormDialog> {
   final _eventController = serviceLocator.get<EventController>();
 
   final _eventTitleTextController = TextEditingController();
@@ -37,7 +43,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
   @override
   void initState() {
     super.initState();
-    _initFieldsWithDefaultValues();
+    _initFields();
   }
 
   @override
@@ -66,10 +72,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTitle(theme: theme),
-                const VerticalGap(),
+                _buildHeader(theme: theme),
                 _buildTextFields(),
-                const VerticalGap.large(),
+                const VerticalGap.extraLarge(),
                 _buildActionButtons(context: context),
               ],
             ),
@@ -79,11 +84,26 @@ class _AddEventDialogState extends State<AddEventDialog> {
     );
   }
 
-  Widget _buildTitle({required ThemeData theme}) {
-    return AppText(
-      text: WeekViewTranslations.dialogTitle,
-      color: theme.colorScheme.onPrimaryContainer,
-      style: theme.textTheme.displaySmall,
+  Widget _buildHeader({required ThemeData theme}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        AppIconButton(
+          iconData: Icons.delete,
+          color: theme.colorScheme.primary,
+          onPressed: () {
+            widget.onDelete?.call();
+            Navigator.of(context).pop();
+          },
+        ),
+        AppIconButton(
+          iconData: Icons.close,
+          color: theme.colorScheme.primary,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 
@@ -143,16 +163,21 @@ class _AddEventDialogState extends State<AddEventDialog> {
       children: [
         Expanded(
           child: AppMainButton(
-            labelText: WeekViewTranslations.eventDiscard,
+            labelText: WeekViewTranslations.eventFormCancel,
             buttonType: EButtonType.secondary,
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => {
+              widget.onDelete?.call(),
+              Navigator.of(context).pop(),
+            },
           ),
         ),
         const HorizontalGap.medium(),
         Expanded(
           child: AppMainButton(
             labelText: WeekViewTranslations.eventSave,
-            onPressed: () => _saveEvent(context: context),
+            onPressed: () {
+              _saveEvent(context: context);
+            },
           ),
         ),
       ],
@@ -183,6 +208,71 @@ class _AddEventDialogState extends State<AddEventDialog> {
     final hour = splitTime[0];
     final minute = splitTime[1];
 
+    if (widget.event != null) {
+      await _updateEvent(
+        context: context,
+        title: title,
+        year: year,
+        month: month,
+        day: day,
+        hour: hour,
+        minute: minute,
+      );
+      return;
+    }
+
+    await _addEvent(
+      context: context,
+      title: title,
+      year: year,
+      month: month,
+      day: day,
+      hour: hour,
+      minute: minute,
+    );
+  }
+
+  Future<void> _updateEvent({
+    required BuildContext context,
+    required String title,
+    required int? year,
+    required int? month,
+    required int? day,
+    required String hour,
+    required String minute,
+  }) async {
+    final result = await _eventController.editEvent(
+      eventId: widget.event!.id,
+      title: title,
+      startTime: DateTime(
+        year ?? 0,
+        month ?? 0,
+        day ?? 0,
+        int.tryParse(hour) ?? 0,
+        int.tryParse(minute) ?? 0,
+      ),
+    );
+
+    if (result.isLeft()) {
+      return;
+    }
+
+    widget.onSave();
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _addEvent({
+    required BuildContext context,
+    required String title,
+    required int? year,
+    required int? month,
+    required int? day,
+    required String hour,
+    required String minute,
+  }) async {
     final result = await _eventController.addEvent(
       title: title,
       startTime: DateTime(
@@ -198,20 +288,24 @@ class _AddEventDialogState extends State<AddEventDialog> {
       return;
     }
 
-    widget.onEventAdded();
+    widget.onSave();
 
     if (context.mounted) {
       Navigator.of(context).pop();
     }
   }
 
-  void _initFieldsWithDefaultValues() {
+  void _initFields() {
     final now = DateTime.now().roundToNearestQuarterHour;
-    final targetDate = widget.initialDate?.roundToNearestQuarterHour ?? now;
+    final targetDate =
+        widget.event?.startTime ??
+        widget.initialDate?.roundToNearestQuarterHour ??
+        now;
 
+    _eventTitleTextController.text = widget.event?.title ?? '';
     _eventDateTextController.text =
         '${targetDate.year.toString().padLeft(4, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
     _eventTimeTextController.text =
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+        '${targetDate.hour.toString().padLeft(2, '0')}:${targetDate.minute.toString().padLeft(2, '0')}';
   }
 }

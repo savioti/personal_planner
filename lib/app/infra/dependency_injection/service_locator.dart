@@ -5,6 +5,7 @@ import 'package:personal_planner/app/modules/events/data/repositories/event_repo
 import 'package:personal_planner/app/modules/events/domain/repositories/event_repository.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/add_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/delete_event_usecase.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/edit_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/get_events_usecase.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_datasource.dart';
@@ -78,6 +79,9 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<GetOverdueTasksUsecase>(
     () => GetOverdueTasksUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<EditEventUsecase>(
+    () => EditEventUsecase(repository: serviceLocator.get()),
+  );
 }
 
 void _registerControllers() {
@@ -86,6 +90,7 @@ void _registerControllers() {
       addEventUsecase: serviceLocator.get(),
       getEventsUsecase: serviceLocator.get(),
       deleteEventUsecase: serviceLocator.get(),
+      editEventUsecase: serviceLocator.get(),
     ),
   );
   serviceLocator.registerLazySingleton<TasksController>(

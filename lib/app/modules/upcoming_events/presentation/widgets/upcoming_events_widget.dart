@@ -5,6 +5,7 @@ import 'package:personal_planner/app/modules/events/domain/entities/event_entity
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/modules/upcoming_events/presentation/widgets/event_widget.dart';
+import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
@@ -16,15 +17,20 @@ class UpcomingEventsWidget extends ConsumerWidget {
 
   final int _eventListsPerSection = 3;
   final int _eventsPerList = 4;
-  final EventController _controller = serviceLocator.get<EventController>();
+  final EventController _eventController = serviceLocator
+      .get<EventController>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final nextWeekEventsAsync = ref.watch(_controller.nextWeekEventsProvider);
-    final thisMonthEventsAsync = ref.watch(_controller.thisMonthEventsProvider);
-    final futureEventsAsync = ref.watch(_controller.futureEventsProvider);
+    final nextWeekEventsAsync = ref.watch(
+      _eventController.nextWeekEventsProvider,
+    );
+    final thisMonthEventsAsync = ref.watch(
+      _eventController.thisMonthEventsProvider,
+    );
+    final futureEventsAsync = ref.watch(_eventController.futureEventsProvider);
 
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
@@ -79,6 +85,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
                           ...events,
                           ...events,
                         ],
+                        context: context,
+                        ref: ref,
                       );
                     },
                   ),
@@ -98,6 +106,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
                       return _buildNextEventsLists(
                         theme: theme,
                         events: events,
+                        context: context,
+                        ref: ref,
                       );
                     },
                   ),
@@ -117,6 +127,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
                       return _buildNextEventsLists(
                         theme: theme,
                         events: events,
+                        context: context,
+                        ref: ref,
                       );
                     },
                   ),
@@ -163,6 +175,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
   Widget _buildNextEventsLists({
     required ThemeData theme,
     required List<EventEntity> events,
+    required BuildContext context,
+    required WidgetRef ref,
   }) {
     if (events.isEmpty) {
       return const SizedBox();
@@ -185,7 +199,24 @@ class UpcomingEventsWidget extends ConsumerWidget {
                     right: AppDimensions.paddingSmall,
                     bottom: AppDimensions.spacingTiny,
                   ),
-                  child: EventWidget(event: event),
+                  child: EventWidget(
+                    event: event,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: EventFormDialog(
+                              event: event,
+                              onSave: () => _refreshUpcomingEvents(ref: ref),
+                              onDelete: () =>
+                                  _deleteEvent(eventId: event.id, ref: ref),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 );
               }),
             ],
@@ -196,8 +227,16 @@ class UpcomingEventsWidget extends ConsumerWidget {
   }
 
   void _refreshUpcomingEvents({required WidgetRef ref}) {
-    ref.invalidate(_controller.nextWeekEventsProvider);
-    ref.invalidate(_controller.thisMonthEventsProvider);
-    ref.invalidate(_controller.futureEventsProvider);
+    ref.invalidate(_eventController.nextWeekEventsProvider);
+    ref.invalidate(_eventController.thisMonthEventsProvider);
+    ref.invalidate(_eventController.futureEventsProvider);
+  }
+
+  Future<void> _deleteEvent({
+    required String eventId,
+    required WidgetRef ref,
+  }) async {
+    await _eventController.deleteEvent(eventId: eventId);
+    _refreshUpcomingEvents(ref: ref);
   }
 }

@@ -61,7 +61,8 @@ class WeekViewTranslations {
   static const String eventTime = 'Horário';
   static const String eventDescription = 'Descrição';
   static const String eventSave = 'Salvar';
-  static const String eventDiscard = 'Descartar';
+  static const String eventFormCancel = 'Cancelar';
+  static const String eventDelete = 'Excluir';
 }
 
 class UpcomingEventsTranslations {

@@ -1,10 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:personal_planner/app/modules/events/data/requests/add_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/edit_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/add_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/delete_event_usecase.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/edit_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/get_events_usecase.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
 
@@ -17,11 +19,13 @@ class EventController {
   final AddEventUsecase addEventUsecase;
   final GetEventsUsecase getEventsUsecase;
   final DeleteEventUsecase deleteEventUsecase;
+  final EditEventUsecase editEventUsecase;
 
   EventController({
     required this.addEventUsecase,
     required this.getEventsUsecase,
     required this.deleteEventUsecase,
+    required this.editEventUsecase,
   }) {
     _initializeProviders();
   }
@@ -86,6 +90,32 @@ class EventController {
       return Left(
         Failure(
           message: 'EventController - Failed to delete event: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, EventEntity>> editEvent({
+    required String eventId,
+    required String title,
+    required DateTime startTime,
+    DateTime? endTime,
+    String? description,
+  }) async {
+    try {
+      final request = EditEventRequest(
+        eventId: eventId,
+        title: title,
+        startTime: startTime,
+        endTime: endTime,
+        description: description,
+      );
+
+      return await editEventUsecase(request);
+    } catch (e) {
+      return Left(
+        Failure(
+          message: 'EventController - Failed to edit event: ${e.toString()}',
         ),
       );
     }

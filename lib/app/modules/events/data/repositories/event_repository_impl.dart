@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:personal_planner/app/modules/events/data/datasources/event_datasource.dart';
 import 'package:personal_planner/app/modules/events/data/requests/add_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/edit_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/repositories/event_repository.dart';
@@ -57,6 +58,23 @@ class EventRepositoryImpl implements EventRepository {
         Failure(
           message:
               'EventRepositoryImpl - Failed to delete event: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, EventEntity>> editEvent(
+    EditEventRequest request,
+  ) async {
+    try {
+      final eventModel = await _datasource.editEvent(request);
+      return Right(eventModel.toEntity());
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'EventRepositoryImpl - Failed to edit event: ${e.toString()}',
         ),
       );
     }

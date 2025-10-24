@@ -4,7 +4,7 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/add_event_dialog.dart';
+import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_widget.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/utils/task_utils.dart';
@@ -148,6 +148,7 @@ class WeekViewWidget extends ConsumerWidget {
                 context: context,
                 initialDate: date,
               ),
+              onEventSave: (_) => _refreshEvents(ref: ref),
             ),
           );
         }),
@@ -164,9 +165,9 @@ class WeekViewWidget extends ConsumerWidget {
       context: context,
       builder: (context) {
         return Dialog(
-          child: AddEventDialog(
+          child: EventFormDialog(
             initialDate: initialDate,
-            onEventAdded: () => _onEventAdded(ref),
+            onSave: () => _refreshEvents(ref: ref),
           ),
         );
       },
@@ -178,10 +179,10 @@ class WeekViewWidget extends ConsumerWidget {
     required WidgetRef ref,
   }) async {
     await _eventController.deleteEvent(eventId: eventId);
-    ref.invalidate(_eventController.weekEventsProvider);
+    _refreshEvents(ref: ref);
   }
 
-  void _onEventAdded(WidgetRef ref) {
+  void _refreshEvents({required WidgetRef ref}) {
     ref.invalidate(_eventController.weekEventsProvider);
     ref.invalidate(_eventController.nextWeekEventsProvider);
     ref.invalidate(_eventController.thisMonthEventsProvider);
@@ -197,7 +198,7 @@ class WeekViewWidget extends ConsumerWidget {
   }
 
   void _refreshWeekView({required WidgetRef ref}) {
-    ref.invalidate(_eventController.weekEventsProvider);
+    _refreshEvents(ref: ref);
     ref.invalidate(_tasksController.weekTasksProvider);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_section_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_title_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_widget.dart';
@@ -19,6 +20,7 @@ class WeekViewDayWidget extends StatelessWidget {
   final List<EventEntity> events;
   final List<TaskEntity> tasks;
   final Function(String eventId) onEventDelete;
+  final Function(String eventId) onEventSave;
   final Function(String taskId) onTaskComplete;
   final VoidCallback onTapAddEvent;
 
@@ -30,6 +32,7 @@ class WeekViewDayWidget extends StatelessWidget {
     required this.events,
     required this.tasks,
     required this.onEventDelete,
+    required this.onEventSave,
     required this.onTaskComplete,
     required this.onTapAddEvent,
   });
@@ -84,7 +87,23 @@ class WeekViewDayWidget extends StatelessWidget {
                 itemBuilder: (_, index) {
                   final event = events[index];
 
-                  return EventWidget(event: event);
+                  return EventWidget(
+                    event: event,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: EventFormDialog(
+                              event: event,
+                              onSave: () => onEventSave.call(event.id),
+                              onDelete: () => onEventDelete.call(event.id),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
                 },
               ),
             ],
