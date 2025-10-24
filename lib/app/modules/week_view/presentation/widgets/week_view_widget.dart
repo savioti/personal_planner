@@ -141,6 +141,9 @@ class WeekViewWidget extends ConsumerWidget {
               tasks: tasks,
               onEventDelete: (eventId) =>
                   _deleteEvent(eventId: eventId, ref: ref),
+              onTaskDelete: (taskId) {
+                _deleteTask(taskId: taskId, ref: ref);
+              },
               onTaskComplete: (taskId) =>
                   _completeTask(taskId: taskId, ref: ref),
               onTapAddEvent: () => _showAddEventDialog(
@@ -148,7 +151,7 @@ class WeekViewWidget extends ConsumerWidget {
                 context: context,
                 initialDate: date,
               ),
-              onEventSave: (_) => _refreshEvents(ref: ref),
+              onSave: () => _refreshWeekView(ref: ref),
             ),
           );
         }),
@@ -180,6 +183,14 @@ class WeekViewWidget extends ConsumerWidget {
   }) async {
     await _eventController.deleteEvent(eventId: eventId);
     _refreshEvents(ref: ref);
+  }
+
+  Future<void> _deleteTask({
+    required String taskId,
+    required WidgetRef ref,
+  }) async {
+    await _tasksController.deleteTask(taskId: taskId);
+    ref.invalidate(_tasksController.weekTasksProvider);
   }
 
   void _refreshEvents({required WidgetRef ref}) {

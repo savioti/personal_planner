@@ -4,6 +4,7 @@ import 'package:personal_planner/app/infra/dependency_injection/service_locator.
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/edit_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_all_pending_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
@@ -12,6 +13,7 @@ import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.d
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/delete_task_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/edit_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_overdue_tasks_usecase.dart';
@@ -22,6 +24,7 @@ import 'package:personal_planner/app/shared/extensions/date_time_extension.dart'
 class TasksController {
   final AddTaskUsecase _addTaskUsecase;
   final GetTasksUsecase _getTasksUsecase;
+  final EditTaskUsecase _editTaskUsecase;
   final GetAllPendingTasksUsecase _getAllPendingTasksUsecase;
   final GetBacklogTasksRequestUsecase _getBacklogTasksRequestUsecase;
   final CompleteTaskUsecase _completeTaskUsecase;
@@ -31,6 +34,7 @@ class TasksController {
   TasksController({
     required AddTaskUsecase addTaskUsecase,
     required GetTasksUsecase getTasksUsecase,
+    required EditTaskUsecase editTaskUsecase,
     required GetAllPendingTasksUsecase getAllPendingTasksUsecase,
     required GetBacklogTasksRequestUsecase getBacklogTasksRequestUsecase,
     required CompleteTaskUsecase completeTaskUsecase,
@@ -38,6 +42,7 @@ class TasksController {
     required GetOverdueTasksUsecase getOverdueTasksUsecase,
   }) : _addTaskUsecase = addTaskUsecase,
        _getTasksUsecase = getTasksUsecase,
+       _editTaskUsecase = editTaskUsecase,
        _getAllPendingTasksUsecase = getAllPendingTasksUsecase,
        _getBacklogTasksRequestUsecase = getBacklogTasksRequestUsecase,
        _completeTaskUsecase = completeTaskUsecase,
@@ -69,6 +74,31 @@ class TasksController {
         Failure(
           message:
               'TasksController.addTask - Failed to add task: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, TaskEntity>> editTask({
+    required String taskId,
+    required String title,
+    String? description,
+    DateTime? deadline,
+  }) async {
+    try {
+      final request = EditTaskRequest(
+        taskId: taskId,
+        title: title,
+        description: description,
+        deadline: deadline,
+      );
+
+      return await _editTaskUsecase(request);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksController.editTask - Failed to edit task: ${e.toString()}',
         ),
       );
     }
@@ -110,11 +140,11 @@ class TasksController {
   }
 
   Future<Either<Failure, List<TaskEntity>>> getBacklogTasks(
-    DateTime before,
+    DateTime from,
   ) async {
     try {
       return await _getBacklogTasksRequestUsecase(
-        GetBacklogTasksRequest(from: before),
+        GetBacklogTasksRequest(from: from),
       );
     } catch (e) {
       return Left(
@@ -191,7 +221,10 @@ class TasksController {
 
     backlogTasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
       final now = DateTime.now();
-      final result = await getBacklogTasks(now);
+      final startOfNextWeek = now
+          .add(Duration(days: 7 - now.weekday + 1))
+          .toDateOnly;
+      final result = await getBacklogTasks(startOfNextWeek);
 
       return result.fold(
         (failure) => throw Exception(failure.message),

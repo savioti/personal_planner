@@ -4,6 +4,7 @@ import 'package:personal_planner/app/modules/tasks/data/models/task_model.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/edit_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
@@ -193,6 +194,43 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
       );
     } catch (e) {
       throw Exception('TasksFirestoreDatasourceImpl.deleteTask: $e');
+    }
+  }
+
+  @override
+  Future<TaskModel> editTask(EditTaskRequest request) async {
+    try {
+      final docRef = _firestore.collection('tasks').doc(request.taskId);
+      final now = DateTime.now().toUtc();
+
+      final snap = await docRef.get();
+      final data = snap.data();
+
+      if (data == null) {
+        throw StateError('Empty document ${docRef.path}');
+      }
+
+      final payload = <String, dynamic>{
+        ...request.toMap(),
+        'updated_at': Timestamp.fromDate(now),
+      };
+
+      await docRef.update(payload);
+
+      final updatedSnap = await docRef.get();
+      final updatedData = updatedSnap.data();
+
+      if (updatedData == null) {
+        throw StateError('Empty document after update ${docRef.path}');
+      }
+
+      return TaskModel.fromMap({...updatedData, 'id': docRef.id});
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'TasksFirestoreDatasourceImpl.editTask - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('TasksFirestoreDatasourceImpl.editTask: $e');
     }
   }
 

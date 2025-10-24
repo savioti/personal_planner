@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
+import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
@@ -12,12 +13,14 @@ class TaskWidget extends StatelessWidget {
   final TaskEntity task;
   final Function(String eventId) onComplete;
   final Function(String eventId) onDelete;
+  final VoidCallback onSave;
 
   const TaskWidget({
     super.key,
     required this.task,
     required this.onComplete,
     required this.onDelete,
+    required this.onSave,
   });
 
   @override
@@ -42,13 +45,38 @@ class TaskWidget extends StatelessWidget {
               _buildCheckbox(colorScheme: theme.colorScheme),
               const SizedBox(width: AppDimensions.spacingSmall),
               Expanded(
-                child: AppText(
-                  text: task.title,
-                  color: theme.colorScheme.onPrimary,
-                  style: AppTextStyles.bodySmallBold(),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: TaskFormDialog(
+                              task: task,
+                              onSave: onSave,
+                              onDelete: () => onDelete(task.id),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AppText(
+                            text: task.title,
+                            color: theme.colorScheme.onPrimary,
+                            style: AppTextStyles.bodySmallBold(),
+                          ),
+                        ),
+                        _buildDeadline(theme: theme),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              _buildDeadline(theme: theme),
             ],
           );
         },

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
+import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_main_button.dart';
 import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
@@ -12,16 +14,23 @@ import 'package:personal_planner/app/shared/design_system/text_field/app_text_fi
 import 'package:personal_planner/app/shared/design_system/text_field/app_time_text_field.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
-class AddTaskDialog extends StatefulWidget {
-  final VoidCallback onTaskAdded;
+class TaskFormDialog extends StatefulWidget {
+  final VoidCallback onSave;
+  final VoidCallback? onDelete;
+  final TaskEntity? task;
 
-  const AddTaskDialog({super.key, required this.onTaskAdded});
+  const TaskFormDialog({
+    super.key,
+    required this.onSave,
+    this.onDelete,
+    this.task,
+  });
 
   @override
-  State<AddTaskDialog> createState() => _AddTaskDialogState();
+  State<TaskFormDialog> createState() => _TaskFormDialogState();
 }
 
-class _AddTaskDialogState extends State<AddTaskDialog> {
+class _TaskFormDialogState extends State<TaskFormDialog> {
   final _tasksController = serviceLocator.get<TasksController>();
 
   final _titleTextController = TextEditingController();
@@ -32,7 +41,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   void initState() {
     super.initState();
-    _initFieldsWithDefaultValues();
+    _initTextFields();
   }
 
   @override
@@ -57,8 +66,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTitle(theme: theme),
-          const VerticalGap(),
+          _buildHeader(theme: theme),
           _buildTextFields(theme: theme),
           const VerticalGap.large(),
           _buildActionButtons(context: context),
@@ -67,11 +75,27 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     );
   }
 
-  Widget _buildTitle({required ThemeData theme}) {
-    return AppText(
-      text: WeekTasksTranslations.dialogTitle,
-      color: theme.colorScheme.onPrimaryContainer,
-      style: theme.textTheme.displaySmall,
+  Widget _buildHeader({required ThemeData theme}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (widget.task != null && widget.onDelete != null)
+          AppIconButton(
+            iconData: Icons.delete,
+            color: theme.colorScheme.primary,
+            onPressed: () {
+              widget.onDelete?.call();
+              Navigator.of(context).pop();
+            },
+          ),
+        AppIconButton(
+          iconData: Icons.close,
+          color: theme.colorScheme.primary,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 
@@ -162,47 +186,36 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   void _saveTask({required BuildContext context}) async {
     final title = _titleTextController.text;
     final description = _descriptionTextController.text;
-    final deadlineText = _deadlineDateTextController.text;
+    final deadline = _extractDeadlineFromTextField();
 
-    DateTime? deadline;
-    if (deadlineText.isNotEmpty) {
-      final splitDate = deadlineText.split('-');
-
-      if (splitDate.length == 3) {
-        final year = int.tryParse(splitDate[0]);
-        final month = int.tryParse(splitDate[1]);
-        final day = int.tryParse(splitDate[2]);
-
-        if (year != null && month != null && day != null) {
-          deadline = DateTime(year, month, day);
-        }
-      }
-
-      final timeText = _deadlineTimeTextController.text;
-
-      if (timeText.isNotEmpty) {
-        final splitTime = timeText.split(':');
-
-        if (splitTime.length == 2) {
-          final hour = int.tryParse(splitTime[0]);
-          final minute = int.tryParse(splitTime[1]);
-
-          if (hour != null && minute != null && deadline != null) {
-            deadline = DateTime(
-              deadline.year,
-              deadline.month,
-              deadline.day,
-              hour,
-              minute,
-            );
-          }
-        }
-      }
+    if (widget.task == null) {
+      await _addTask(
+        context: context,
+        title: title,
+        description: description,
+        deadline: deadline,
+      );
+      return;
     }
 
+    await _updateTask(
+      context: context,
+      taskId: widget.task!.id,
+      title: title,
+      description: description,
+      deadline: deadline,
+    );
+  }
+
+  Future<void> _addTask({
+    required BuildContext context,
+    required String title,
+    String? description,
+    DateTime? deadline,
+  }) async {
     final result = await _tasksController.addTask(
       title: title,
-      description: description.isNotEmpty ? description : null,
+      description: description?.isNotEmpty == true ? description : null,
       deadline: deadline,
     );
 
@@ -210,18 +223,95 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       return;
     }
 
-    widget.onTaskAdded();
+    widget.onSave();
 
     if (context.mounted) {
       Navigator.of(context).pop();
     }
   }
 
-  void _initFieldsWithDefaultValues() {
-    final now = DateTime.now();
+  Future<void> _updateTask({
+    required BuildContext context,
+    required String taskId,
+    required String title,
+    String? description,
+    DateTime? deadline,
+  }) async {
+    final result = await _tasksController.editTask(
+      taskId: taskId,
+      title: title,
+      description: description?.isNotEmpty == true ? description : null,
+      deadline: deadline,
+    );
+
+    if (result.isLeft()) {
+      return;
+    }
+
+    widget.onSave();
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  DateTime? _extractDeadlineFromTextField() {
+    final deadlineText = _deadlineDateTextController.text;
+
+    if (deadlineText.isEmpty) {
+      return null;
+    }
+
+    DateTime? deadline;
+    final splitDate = deadlineText.split('-');
+
+    if (splitDate.length == 3) {
+      final year = int.tryParse(splitDate[0]);
+      final month = int.tryParse(splitDate[1]);
+      final day = int.tryParse(splitDate[2]);
+
+      if (year != null && month != null && day != null) {
+        deadline = DateTime(year, month, day);
+      }
+    }
+
+    final timeText = _deadlineTimeTextController.text;
+
+    if (timeText.isNotEmpty) {
+      final splitTime = timeText.split(':');
+
+      if (splitTime.length == 2) {
+        final hour = int.tryParse(splitTime[0]);
+        final minute = int.tryParse(splitTime[1]);
+
+        if (hour != null && minute != null && deadline != null) {
+          deadline = DateTime(
+            deadline.year,
+            deadline.month,
+            deadline.day,
+            hour,
+            minute,
+          );
+        }
+      }
+    }
+
+    return deadline;
+  }
+
+  void _initTextFields() {
+    _titleTextController.text = widget.task?.title ?? '';
+    _descriptionTextController.text = widget.task?.description ?? '';
+
+    final targetDate = widget.task?.deadline;
+
+    if (targetDate == null) {
+      return;
+    }
+
     _deadlineDateTextController.text =
-        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        '${targetDate.year.toString().padLeft(4, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
     _deadlineTimeTextController.text =
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+        '${targetDate.hour.toString().padLeft(2, '0')}:${targetDate.minute.toString().padLeft(2, '0')}';
   }
 }

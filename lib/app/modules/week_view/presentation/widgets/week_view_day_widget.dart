@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
+import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_section_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_title_divider_widget.dart';
@@ -20,7 +21,8 @@ class WeekViewDayWidget extends StatelessWidget {
   final List<EventEntity> events;
   final List<TaskEntity> tasks;
   final Function(String eventId) onEventDelete;
-  final Function(String eventId) onEventSave;
+  final Function(String taskId) onTaskDelete;
+  final VoidCallback onSave;
   final Function(String taskId) onTaskComplete;
   final VoidCallback onTapAddEvent;
 
@@ -32,7 +34,8 @@ class WeekViewDayWidget extends StatelessWidget {
     required this.events,
     required this.tasks,
     required this.onEventDelete,
-    required this.onEventSave,
+    required this.onTaskDelete,
+    required this.onSave,
     required this.onTaskComplete,
     required this.onTapAddEvent,
   });
@@ -75,6 +78,20 @@ class WeekViewDayWidget extends StatelessWidget {
                     onComplete: () {
                       onTaskComplete(task.id);
                     },
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: TaskFormDialog(
+                              task: task,
+                              onSave: onSave,
+                              onDelete: () => onTaskDelete(task.id),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   );
                 },
               ),
@@ -96,7 +113,7 @@ class WeekViewDayWidget extends StatelessWidget {
                           return Dialog(
                             child: EventFormDialog(
                               event: event,
-                              onSave: () => onEventSave.call(event.id),
+                              onSave: () => onSave.call(),
                               onDelete: () => onEventDelete.call(event.id),
                             ),
                           );

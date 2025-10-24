@@ -15,6 +15,7 @@ import 'package:personal_planner/app/modules/tasks/domain/repositories/tasks_rep
 import 'package:personal_planner/app/modules/tasks/domain/usecases/add_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/complete_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/delete_task_usecase.dart';
+import 'package:personal_planner/app/modules/tasks/domain/usecases/edit_task_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_all_pending_tasks_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_backlog_tasks_request_usecase.dart';
 import 'package:personal_planner/app/modules/tasks/domain/usecases/get_overdue_tasks_usecase.dart';
@@ -82,6 +83,9 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<EditEventUsecase>(
     () => EditEventUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<EditTaskUsecase>(
+    () => EditTaskUsecase(repository: serviceLocator.get()),
+  );
 }
 
 void _registerControllers() {
@@ -97,6 +101,7 @@ void _registerControllers() {
     () => TasksController(
       addTaskUsecase: serviceLocator.get(),
       getTasksUsecase: serviceLocator.get(),
+      editTaskUsecase: serviceLocator.get(),
       getAllPendingTasksUsecase: serviceLocator.get(),
       getBacklogTasksRequestUsecase: serviceLocator.get(),
       completeTaskUsecase: serviceLocator.get(),

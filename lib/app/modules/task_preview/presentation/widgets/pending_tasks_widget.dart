@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
-import 'package:personal_planner/app/modules/task_preview/presentation/widgets/add_task_dialog.dart';
+import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_widget.dart';
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
@@ -77,9 +77,7 @@ class PendingTasksWidget extends ConsumerWidget {
               context: context,
               builder: (context) {
                 return Dialog(
-                  child: AddTaskDialog(
-                    onTaskAdded: () => _refreshTasks(ref: ref),
-                  ),
+                  child: TaskFormDialog(onSave: () => _refreshTasks(ref: ref)),
                 );
               },
             );
@@ -136,7 +134,11 @@ class PendingTasksWidget extends ConsumerWidget {
                   return TaskWidget(
                     task: task,
                     onComplete: (_) => _onCompleteChanged(ref: ref),
-                    onDelete: (_) => _onDeletePressed(ref: ref),
+                    onDelete: (_) =>
+                        _onDeletePressed(ref: ref, taskId: task.id),
+                    onSave: () {
+                      _refreshTasks(ref: ref);
+                    },
                   );
                 },
               ),
@@ -194,7 +196,9 @@ class PendingTasksWidget extends ConsumerWidget {
                   return TaskWidget(
                     task: task,
                     onComplete: (_) => _onCompleteChanged(ref: ref),
-                    onDelete: (_) => _onDeletePressed(ref: ref),
+                    onDelete: (_) =>
+                        _onDeletePressed(ref: ref, taskId: task.id),
+                    onSave: () => _refreshTasks(ref: ref),
                   );
                 },
               ),
@@ -251,7 +255,9 @@ class PendingTasksWidget extends ConsumerWidget {
                   return TaskWidget(
                     task: task,
                     onComplete: (_) => _onCompleteChanged(ref: ref),
-                    onDelete: (_) => _onDeletePressed(ref: ref),
+                    onDelete: (taskId) =>
+                        _onDeletePressed(ref: ref, taskId: taskId),
+                    onSave: () => _refreshTasks(ref: ref),
                   );
                 },
               ),
@@ -263,11 +269,15 @@ class PendingTasksWidget extends ConsumerWidget {
   }
 
   void _onCompleteChanged({required WidgetRef ref}) {
-    ref.invalidate(_controller.weekTasksProvider);
+    _refreshTasks(ref: ref);
   }
 
-  void _onDeletePressed({required WidgetRef ref}) {
-    ref.invalidate(_controller.weekTasksProvider);
+  void _onDeletePressed({
+    required WidgetRef ref,
+    required String taskId,
+  }) async {
+    await _controller.deleteTask(taskId: taskId);
+    _refreshTasks(ref: ref);
   }
 
   void _refreshTasks({required WidgetRef ref}) {

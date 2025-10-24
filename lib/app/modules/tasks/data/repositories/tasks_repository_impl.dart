@@ -3,6 +3,7 @@ import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_dataso
 import 'package:personal_planner/app/modules/tasks/data/requests/add_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/complete_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/delete_task_request.dart';
+import 'package:personal_planner/app/modules/tasks/data/requests/edit_task_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_backlog_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_overdue_tasks_request.dart';
 import 'package:personal_planner/app/modules/tasks/data/requests/get_tasks_request.dart';
@@ -44,6 +45,21 @@ class TasksRepositoryImpl implements TasksRepository {
         Failure(
           message:
               'TasksRepositoryImpl.getTasks - Failed to get tasks: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TaskEntity>> editTask(EditTaskRequest request) async {
+    try {
+      final taskModel = await _datasource.editTask(request);
+      return Right(taskModel.toEntity());
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'TasksRepositoryImpl.editTask - Failed to edit task: ${e.toString()}',
         ),
       );
     }
