@@ -88,14 +88,15 @@ class _EventFormDialogState extends State<EventFormDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        AppIconButton(
-          iconData: Icons.delete,
-          color: theme.colorScheme.primary,
-          onPressed: () {
-            widget.onDelete?.call();
-            Navigator.of(context).pop();
-          },
-        ),
+        if (widget.event != null && widget.onDelete != null)
+          AppIconButton(
+            iconData: Icons.delete,
+            color: theme.colorScheme.primary,
+            onPressed: () {
+              widget.onDelete?.call();
+              Navigator.of(context).pop();
+            },
+          ),
         AppIconButton(
           iconData: Icons.close,
           color: theme.colorScheme.primary,
