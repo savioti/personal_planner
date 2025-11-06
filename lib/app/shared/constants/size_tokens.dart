@@ -69,4 +69,6 @@ class AppDimensions {
   static const double weekViewVerticalDividerWidth = 16.0;
   static const double weekViewHorizontalDividerLength = 32.0;
   static const double weekViewItemUnderlineThickness = 2.0;
+  static const double weekViewweekdayChipRadius = 16.0;
+  static const double weekViewweekdayChipSize = 32.0;
 }

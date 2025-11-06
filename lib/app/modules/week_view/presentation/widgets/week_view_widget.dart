@@ -134,7 +134,7 @@ class WeekViewWidget extends ConsumerWidget {
 
           return Flexible(
             child: WeekViewDayWidget(
-              title: WeekdayTranslations.getWeekDayNameByIndex(index),
+              title: WeekdayTranslations.getWeekDayNameByIndex(index + 1),
               date: date,
               weekday: weekday,
               events: events,

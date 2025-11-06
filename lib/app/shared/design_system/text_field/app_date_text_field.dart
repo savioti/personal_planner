@@ -26,7 +26,7 @@ class AppDateTextField extends StatelessWidget {
         final pickedDate = await showDatePicker(
           context: context,
           initialDate: now,
-          firstDate: now,
+          firstDate: now.subtract(const Duration(days: 7)),
           lastDate: DateTime(now.year + 2),
         );
 

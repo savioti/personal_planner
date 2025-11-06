@@ -174,4 +174,14 @@ extension DateTimeExtension on DateTime {
     final lastDayOfMonth = DateTime(year, month + 1, 0).day;
     return DateTime(year, month, lastDayOfMonth, 23, 59, 59, 999);
   }
+
+  DateTime getfirstWeekdayOfMonth(int weekday) {
+    DateTime date = DateTime(year, month, 1);
+
+    while (date.weekday != weekday) {
+      date = date.add(const Duration(days: 1));
+    }
+
+    return date;
+  }
 }

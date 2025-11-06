@@ -12,6 +12,8 @@ import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/design_system/text_field/app_date_text_field.dart';
 import 'package:personal_planner/app/shared/design_system/text_field/app_text_field.dart';
 import 'package:personal_planner/app/shared/design_system/text_field/app_time_text_field.dart';
+import 'package:personal_planner/app/shared/enums/recurrence_type.dart';
+import 'package:personal_planner/app/shared/enums/weekday.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 import 'package:personal_planner/app/shared/theme/app_text_styles.dart';
 
@@ -34,6 +36,9 @@ class EventFormDialog extends StatefulWidget {
 }
 
 class _EventFormDialogState extends State<EventFormDialog> {
+  final _selectedWeekdays = <Weekday>{};
+  RecurrenceType _selectedRecurrenceType = RecurrenceType.none;
+
   final _eventController = serviceLocator.get<EventController>();
 
   final _eventTitleTextController = TextEditingController();
@@ -74,6 +79,9 @@ class _EventFormDialogState extends State<EventFormDialog> {
               children: [
                 _buildHeader(theme: theme),
                 _buildTextFields(),
+                const VerticalGap.large(),
+                _buildRecurrenceTypeSelector(theme: theme),
+                _buildWeekdaySelector(theme: theme),
                 const VerticalGap.extraLarge(),
                 _buildActionButtons(context: context),
               ],
@@ -157,6 +165,84 @@ class _EventFormDialogState extends State<EventFormDialog> {
     );
   }
 
+  Widget _buildRecurrenceTypeSelector({required ThemeData theme}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        AppText(
+          text: '${WeekViewTranslations.eventRecurrence}:',
+          style: AppTextStyles.bodyMedium(),
+        ),
+        const HorizontalGap.medium(),
+        DropdownButton<RecurrenceType>(
+          value: _selectedRecurrenceType,
+          items: RecurrenceType.values.map((RecurrenceType type) {
+            return DropdownMenuItem<RecurrenceType>(
+              value: type,
+              child: AppText(
+                text: RecurrenceTypeTranslations.getRecurrenceTypeName(type),
+              ),
+            );
+          }).toList(),
+          onChanged: (RecurrenceType? newValue) {
+            _onUpdateRecurrenceType(newValue);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeekdaySelector({required ThemeData theme}) {
+    if (_selectedRecurrenceType == RecurrenceType.daily ||
+        _selectedRecurrenceType == RecurrenceType.none ||
+        _selectedRecurrenceType == RecurrenceType.yearly ||
+        _selectedRecurrenceType == RecurrenceType.monthly) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppDimensions.spacingLarge),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: Weekday.values.map((weekday) {
+          final isSelected = _selectedWeekdays.contains(weekday);
+
+          return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                _onWeekdayChipTap(weekday);
+              },
+              child: Container(
+                width: AppDimensions.weekViewweekdayChipSize,
+                height: AppDimensions.weekViewweekdayChipSize,
+                padding: const EdgeInsets.all(AppDimensions.paddingTiny),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(
+                    AppDimensions.weekViewweekdayChipRadius,
+                  ),
+                ),
+                child: Center(
+                  child: AppText(
+                    text: WeekdayTranslations.getWeekdayFirstLetterByIndex(
+                      weekday.toInt(),
+                    ),
+                    color: isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _buildActionButtons({required BuildContext context}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -187,19 +273,13 @@ class _EventFormDialogState extends State<EventFormDialog> {
 
   void _saveEvent({required BuildContext context}) async {
     final title = _eventTitleTextController.text;
-    final date = _eventDateTextController.text;
-    final time = _eventTimeTextController.text;
+    final date = _parseCurrentDate();
 
-    final splitDate = date.split('-');
-
-    if (splitDate.length != 3) {
+    if (date == null) {
       return;
     }
 
-    final year = int.tryParse(splitDate[0]);
-    final month = int.tryParse(splitDate[1]);
-    final day = int.tryParse(splitDate[2]);
-
+    final time = _eventTimeTextController.text;
     final splitTime = time.split(':');
 
     if (splitTime.length != 2) {
@@ -213,9 +293,9 @@ class _EventFormDialogState extends State<EventFormDialog> {
       await _updateEvent(
         context: context,
         title: title,
-        year: year,
-        month: month,
-        day: day,
+        year: date.year,
+        month: date.month,
+        day: date.day,
         hour: hour,
         minute: minute,
       );
@@ -225,9 +305,9 @@ class _EventFormDialogState extends State<EventFormDialog> {
     await _addEvent(
       context: context,
       title: title,
-      year: year,
-      month: month,
-      day: day,
+      year: date.year,
+      month: date.month,
+      day: date.day,
       hour: hour,
       minute: minute,
     );
@@ -252,6 +332,8 @@ class _EventFormDialogState extends State<EventFormDialog> {
         int.tryParse(hour) ?? 0,
         int.tryParse(minute) ?? 0,
       ),
+      recurrenceType: _selectedRecurrenceType,
+      recurrenceWeekdays: _selectedWeekdays,
     );
 
     if (result.isLeft()) {
@@ -283,6 +365,8 @@ class _EventFormDialogState extends State<EventFormDialog> {
         int.tryParse(hour) ?? 0,
         int.tryParse(minute) ?? 0,
       ),
+      recurrenceType: _selectedRecurrenceType,
+      recurrenceWeekdays: _selectedWeekdays,
     );
 
     if (result.isLeft()) {
@@ -308,5 +392,65 @@ class _EventFormDialogState extends State<EventFormDialog> {
         '${targetDate.year.toString().padLeft(4, '0')}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
     _eventTimeTextController.text =
         '${targetDate.hour.toString().padLeft(2, '0')}:${targetDate.minute.toString().padLeft(2, '0')}';
+
+    if (widget.event != null && widget.event!.recurrenceType != null) {
+      _selectedRecurrenceType = widget.event!.recurrenceType!;
+
+      if (widget.event!.recurrenceWeekdays != null) {
+        _selectedWeekdays.addAll(widget.event!.recurrenceWeekdays!);
+      }
+    }
+  }
+
+  void _onUpdateRecurrenceType(RecurrenceType? newValue) {
+    setState(() {
+      if (newValue == null) {
+        return;
+      }
+
+      _selectedWeekdays.clear();
+      _selectedRecurrenceType = newValue;
+
+      if (_selectedRecurrenceType == RecurrenceType.weekly ||
+          _selectedRecurrenceType == RecurrenceType.firstWeekdayOfTheMonth) {
+        final selectedDate = _parseCurrentDate() ?? DateTime.now();
+        final weekday = Weekday.fromInt(selectedDate.weekday);
+        _selectedWeekdays.add(weekday);
+      }
+    });
+  }
+
+  void _onWeekdayChipTap(Weekday weekday) {
+    setState(() {
+      final isSelected = _selectedWeekdays.contains(weekday);
+
+      if (isSelected) {
+        if (_selectedRecurrenceType != RecurrenceType.firstWeekdayOfTheMonth) {
+          _selectedWeekdays.remove(weekday);
+        }
+      } else {
+        if (_selectedRecurrenceType == RecurrenceType.firstWeekdayOfTheMonth) {
+          _selectedWeekdays.clear();
+        }
+
+        _selectedWeekdays.add(weekday);
+      }
+    });
+  }
+
+  DateTime? _parseCurrentDate() {
+    final date = _eventDateTextController.text;
+
+    final splitDate = date.split('-');
+
+    if (splitDate.length != 3) {
+      return null;
+    }
+
+    final year = int.tryParse(splitDate[0]);
+    final month = int.tryParse(splitDate[1]);
+    final day = int.tryParse(splitDate[2]);
+
+    return DateTime(year ?? 0, month ?? 0, day ?? 0);
   }
 }

@@ -4,6 +4,7 @@ import 'package:personal_planner/app/modules/events/data/requests/add_event_requ
 import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/edit_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/get_recurring_events_request.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/events/domain/repositories/event_repository.dart';
 import 'package:personal_planner/app/shared/error/failure.dart';
@@ -39,6 +40,7 @@ class EventRepositoryImpl implements EventRepository {
           .toList();
       return Right(eventEntities);
     } catch (e) {
+      print(e);
       return Left(
         Failure(
           message:
@@ -75,6 +77,26 @@ class EventRepositoryImpl implements EventRepository {
         Failure(
           message:
               'EventRepositoryImpl - Failed to edit event: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<EventEntity>>> getRecurringEvents(
+    GetRecurringEventsRequest request,
+  ) async {
+    try {
+      final eventModels = await _datasource.getRecurringEvents(request);
+      final eventEntities = eventModels
+          .map((model) => model.toEntity())
+          .toList();
+      return Right(eventEntities);
+    } catch (e) {
+      return Left(
+        Failure(
+          message:
+              'EventRepositoryImpl - Failed to get recurring events: ${e.toString()}',
         ),
       );
     }

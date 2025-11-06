@@ -1,3 +1,5 @@
+import 'package:personal_planner/app/shared/enums/recurrence_type.dart';
+
 class WeekdayTranslations {
   static const String monday = 'Segunda';
   static const String tuesday = 'Terça';
@@ -9,22 +11,52 @@ class WeekdayTranslations {
 
   static String getWeekDayNameByIndex(int index) {
     switch (index) {
-      case 0:
-        return monday;
       case 1:
-        return tuesday;
+        return monday;
       case 2:
-        return wednesday;
+        return tuesday;
       case 3:
-        return thursday;
+        return wednesday;
       case 4:
-        return friday;
+        return thursday;
       case 5:
-        return saturday;
+        return friday;
       case 6:
+        return saturday;
+      case 7:
         return sunday;
       default:
         return '';
+    }
+  }
+
+  static String getWeekdayFirstLetterByIndex(int index) {
+    return getWeekDayNameByIndex(index).substring(0, 1);
+  }
+}
+
+class RecurrenceTypeTranslations {
+  static const String none = 'Nenhum';
+  static const String daily = 'Diário';
+  static const String weekly = 'Semanal';
+  static const String monthly = 'Mensal';
+  static const String yearly = 'Anual';
+  static const String firstWeekdayOfTheMonth = 'Primeiro do mês';
+
+  static String getRecurrenceTypeName(RecurrenceType type) {
+    switch (type) {
+      case RecurrenceType.none:
+        return none;
+      case RecurrenceType.daily:
+        return daily;
+      case RecurrenceType.weekly:
+        return weekly;
+      case RecurrenceType.monthly:
+        return monthly;
+      case RecurrenceType.yearly:
+        return yearly;
+      case RecurrenceType.firstWeekdayOfTheMonth:
+        return firstWeekdayOfTheMonth;
     }
   }
 }
@@ -63,6 +95,7 @@ class WeekViewTranslations {
   static const String eventSave = 'Salvar';
   static const String eventFormCancel = 'Cancelar';
   static const String eventDelete = 'Excluir';
+  static const String eventRecurrence = 'Recorrência';
 }
 
 class UpcomingEventsTranslations {

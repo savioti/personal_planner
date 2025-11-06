@@ -5,6 +5,7 @@ import 'package:personal_planner/app/modules/events/data/models/event_model.dart
 import 'package:personal_planner/app/modules/events/data/requests/delete_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/edit_event_request.dart';
 import 'package:personal_planner/app/modules/events/data/requests/get_events_request.dart';
+import 'package:personal_planner/app/modules/events/data/requests/get_recurring_events_request.dart';
 
 class EventDatasourceFirestoreImpl implements EventDatasource {
   EventDatasourceFirestoreImpl({FirebaseFirestore? firestore})
@@ -59,6 +60,7 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
             'start_time',
             isLessThanOrEqualTo: Timestamp.fromDate(request.dateRangeEnd),
           )
+          .where('recurrence_type', isEqualTo: 'none')
           .orderBy('start_time')
           .get();
 
@@ -133,6 +135,35 @@ class EventDatasourceFirestoreImpl implements EventDatasource {
       );
     } catch (e) {
       throw Exception('EventFirestoreDatasourceImpl.editEvent: $e');
+    }
+  }
+
+  @override
+  Future<List<EventModel>> getRecurringEvents(
+    GetRecurringEventsRequest request,
+  ) async {
+    try {
+      final col = _firestore.collection('events');
+
+      final querySnap = await col
+          .where('recurrence_type', isNotEqualTo: 'none')
+          .orderBy('start_time')
+          .get();
+
+      final events = <EventModel>[];
+
+      for (final docSnap in querySnap.docs) {
+        final data = docSnap.data();
+        events.add(EventModel.fromMap({...data, 'id': docSnap.id}));
+      }
+
+      return events;
+    } on FirebaseException catch (e) {
+      throw Exception(
+        'EventFirestoreDatasourceImpl.getRecurringEvents - Firestore error [${e.code}]: ${e.message}',
+      );
+    } catch (e) {
+      throw Exception('EventFirestoreDatasourceImpl.getRecurringEvents: $e');
     }
   }
 }

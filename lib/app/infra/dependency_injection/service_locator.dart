@@ -7,6 +7,7 @@ import 'package:personal_planner/app/modules/events/domain/usecases/add_event_us
 import 'package:personal_planner/app/modules/events/domain/usecases/delete_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/edit_event_usecase.dart';
 import 'package:personal_planner/app/modules/events/domain/usecases/get_events_usecase.dart';
+import 'package:personal_planner/app/modules/events/domain/usecases/get_recurring_events_usecase.dart';
 import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_datasource.dart';
 import 'package:personal_planner/app/modules/tasks/data/datasources/tasks_firestore_datasource_impl.dart';
@@ -59,6 +60,12 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<DeleteEventUsecase>(
     () => DeleteEventUsecase(repository: serviceLocator.get()),
   );
+  serviceLocator.registerLazySingleton<EditEventUsecase>(
+    () => EditEventUsecase(repository: serviceLocator.get()),
+  );
+  serviceLocator.registerLazySingleton<GetRecurringEventsUsecase>(
+    () => GetRecurringEventsUsecase(repository: serviceLocator.get()),
+  );
   serviceLocator.registerLazySingleton<AddTaskUsecase>(
     () => AddTaskUsecase(repository: serviceLocator.get()),
   );
@@ -80,9 +87,6 @@ void _registerUseCases() {
   serviceLocator.registerLazySingleton<GetOverdueTasksUsecase>(
     () => GetOverdueTasksUsecase(repository: serviceLocator.get()),
   );
-  serviceLocator.registerLazySingleton<EditEventUsecase>(
-    () => EditEventUsecase(repository: serviceLocator.get()),
-  );
   serviceLocator.registerLazySingleton<EditTaskUsecase>(
     () => EditTaskUsecase(repository: serviceLocator.get()),
   );
@@ -95,6 +99,7 @@ void _registerControllers() {
       getEventsUsecase: serviceLocator.get(),
       deleteEventUsecase: serviceLocator.get(),
       editEventUsecase: serviceLocator.get(),
+      getRecurringEventsUsecase: serviceLocator.get(),
     ),
   );
   serviceLocator.registerLazySingleton<TasksController>(
