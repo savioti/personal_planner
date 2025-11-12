@@ -4,14 +4,10 @@ import 'package:personal_planner/app/core/initial_setup.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
 
 void main() async {
-  await _setup();
+  await setupServiceLocator();
 
   WidgetsFlutterBinding.ensureInitialized();
+  await runInitialSetup();
 
   runApp(const App());
-}
-
-Future<void> _setup() async {
-  await setupServiceLocator();
-  await runInitialSetup();
 }
