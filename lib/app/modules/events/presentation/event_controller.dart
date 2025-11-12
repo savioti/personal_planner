@@ -433,7 +433,7 @@ class EventController {
     futureEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
       final controller = ref.watch(eventControllerProvider);
       final startOfFuture = endOfMonth.add(const Duration(days: 1));
-      final endOfFuture = startOfFuture.getNextSemesterDateRange.end;
+      final endOfFuture = startOfFuture.nextTrimesterDateRange.end;
 
       final result = await controller.getEvents(
         dateRangeStart: startOfFuture,

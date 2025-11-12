@@ -87,6 +87,33 @@ extension DateTimeExtension on DateTime {
     return Range(start: startOfNextMonth, end: endOfNextMonth);
   }
 
+  Range<DateTime> get nextTrimesterDateRange {
+    final nextTrimesterStartMonth = ((month - 1) ~/ 3 + 1) * 3 + 1;
+    final nextTrimesterStartYear = nextTrimesterStartMonth > 12
+        ? year + 1
+        : year;
+    final adjustedStartMonth = nextTrimesterStartMonth > 12
+        ? nextTrimesterStartMonth - 12
+        : nextTrimesterStartMonth;
+    final nextTrimesterEndMonth = adjustedStartMonth + 2;
+    final nextTrimesterEndYear = nextTrimesterEndMonth > 12
+        ? nextTrimesterStartYear + 1
+        : nextTrimesterStartYear;
+
+    final startOfNextTrimester = DateTime(
+      nextTrimesterStartYear,
+      adjustedStartMonth,
+      1,
+    );
+    final endOfNextTrimester = DateTime(
+      nextTrimesterEndYear,
+      nextTrimesterEndMonth + 1,
+      0,
+    ).dayEnd;
+
+    return Range(start: startOfNextTrimester, end: endOfNextTrimester);
+  }
+
   Range<DateTime> get getNextSemesterDateRange {
     final nextSemesterStartMonth = month <= 6 ? 7 : 1;
     final nextSemesterStartYear = month <= 6 ? year : year + 1;
