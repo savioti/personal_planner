@@ -15,7 +15,7 @@ import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 class UpcomingEventsWidget extends ConsumerWidget {
   UpcomingEventsWidget({super.key});
 
-  final int _eventListsPerSection = 3;
+  final int _eventListsPerSection = 2;
   final int _eventsPerList = 4;
   final EventController _eventController = serviceLocator
       .get<EventController>();
@@ -196,7 +196,7 @@ class UpcomingEventsWidget extends ConsumerWidget {
               ...partialItems.map((event) {
                 return Padding(
                   padding: const EdgeInsets.only(
-                    right: AppDimensions.paddingSmall,
+                    right: AppDimensions.paddingTiny,
                     bottom: AppDimensions.spacingTiny,
                   ),
                   child: EventWidget(
