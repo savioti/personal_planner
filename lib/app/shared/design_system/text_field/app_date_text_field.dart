@@ -5,12 +5,14 @@ class AppDateTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? labelText;
   final String? hintText;
+  final Function(DateTime)? onDateSelected;
 
   const AppDateTextField({
     super.key,
     required this.controller,
     this.labelText,
     this.hintText,
+    this.onDateSelected,
   });
 
   @override
@@ -32,6 +34,7 @@ class AppDateTextField extends StatelessWidget {
 
         if (pickedDate != null) {
           controller.text = pickedDate.toIso8601String().split('T').first;
+          onDateSelected?.call(pickedDate);
         }
       },
     );

@@ -138,7 +138,18 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
             ),
             const HorizontalGap.small(),
             Expanded(
-              child: AppDateTextField(controller: _deadlineDateTextController),
+              child: AppDateTextField(
+                controller: _deadlineDateTextController,
+                onDateSelected: (_) {
+                  if (_deadlineTimeTextController.text.isEmpty) {
+                    _deadlineTimeTextController.text = DateTime.now()
+                        .toIso8601String()
+                        .split('T')
+                        .last
+                        .substring(0, 5);
+                  }
+                },
+              ),
             ),
           ],
         ),
