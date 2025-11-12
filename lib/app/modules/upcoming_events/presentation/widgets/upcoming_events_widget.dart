@@ -77,14 +77,7 @@ class UpcomingEventsWidget extends ConsumerWidget {
                     data: (events) {
                       return _buildNextEventsLists(
                         theme: theme,
-                        events: [
-                          ...events,
-                          ...events,
-                          ...events,
-                          ...events,
-                          ...events,
-                          ...events,
-                        ],
+                        events: events,
                         context: context,
                         ref: ref,
                       );
