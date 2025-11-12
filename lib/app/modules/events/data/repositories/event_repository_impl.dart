@@ -40,7 +40,6 @@ class EventRepositoryImpl implements EventRepository {
           .toList();
       return Right(eventEntities);
     } catch (e) {
-      print(e);
       return Left(
         Failure(
           message:

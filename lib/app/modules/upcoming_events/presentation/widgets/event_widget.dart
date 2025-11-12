@@ -48,7 +48,7 @@ class EventWidget extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AppText(
-                            text: event.startTime.toTime,
+                            text: _getEventTime(event: event),
                             style: theme.textTheme.bodySmall,
                           ),
                           Divider(
@@ -83,5 +83,15 @@ class EventWidget extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _getEventTime({required EventEntity event}) {
+    final isEventInThisWeek = event.startTime.isInTheSameWeekAs(DateTime.now());
+
+    if (isEventInThisWeek) {
+      return event.startTime.toTime;
+    }
+
+    return event.startTime.toMonthDay;
   }
 }

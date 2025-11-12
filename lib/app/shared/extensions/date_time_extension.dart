@@ -211,4 +211,12 @@ extension DateTimeExtension on DateTime {
 
     return date;
   }
+
+  bool isInTheSameWeekAs(DateTime other) {
+    final thisWeekRange = getWeekDateRange;
+    final otherWeekRange = other.getWeekDateRange;
+
+    return thisWeekRange.start.toDateOnly == otherWeekRange.start.toDateOnly &&
+        thisWeekRange.end.toDateOnly == otherWeekRange.end.toDateOnly;
+  }
 }
