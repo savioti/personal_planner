@@ -118,8 +118,8 @@ class WeekTasksTranslations {
   static const String taskDiscard = 'Descartar';
 
   static const String overdueTasksTitle = 'Atrasadas';
-  static const String thisWeekTasksTitle = 'Para esta semana';
-  static const String backlogTasksTitle = 'Algum dia';
+  static const String thisWeekTasksTitle = 'Pendentes';
+  static const String backlogTasksTitle = 'Backlog';
 }
 
 class ExtraFeaturesTranslations {
