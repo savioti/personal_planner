@@ -17,6 +17,9 @@ class EventWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isHovering = ref.watch(hoveringProvider);
+    final now = DateTime.now();
+    final expectedEndTime = event.startTime.add(Duration(hours: 1));
+    final isPastEvent = expectedEndTime.isBefore(now);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -50,6 +53,9 @@ class EventWidget extends ConsumerWidget {
                           AppText(
                             text: event.startTime.toTime,
                             style: theme.textTheme.bodySmall,
+                            decoration: isPastEvent
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
                           ),
                           Divider(
                             thickness:
@@ -64,7 +70,14 @@ class EventWidget extends ConsumerWidget {
                       ),
                     ),
 
-                    Expanded(child: AppText(text: event.title)),
+                    Expanded(
+                      child: AppText(
+                        text: event.title,
+                        decoration: isPastEvent
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
                   ],
                 ),
                 Padding(

@@ -9,6 +9,7 @@ import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.d
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/task_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/areas/disabled_area.dart';
+import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/weekday.dart';
@@ -76,6 +77,7 @@ class WeekViewDayWidget extends StatelessWidget {
   Widget _sectionBase({
     required BuildContext context,
     required String title,
+    required IconData icon,
     required Widget child,
   }) {
     final theme = Theme.of(context);
@@ -98,7 +100,17 @@ class WeekViewDayWidget extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: AppDimensions.paddingSmall),
-            child: AppText(text: title, style: theme.textTheme.titleSmall),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: AppDimensions.iconSizeMedium,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+                HorizontalGap.tiny(),
+                AppText(text: title, style: theme.textTheme.titleSmall),
+              ],
+            ),
           ),
           child,
         ],
@@ -113,6 +125,7 @@ class WeekViewDayWidget extends StatelessWidget {
 
     return _sectionBase(
       context: context,
+      icon: Icons.checklist_rtl,
       title: WeekViewTranslations.tasksSectionTitle,
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),
@@ -153,6 +166,7 @@ class WeekViewDayWidget extends StatelessWidget {
 
     return _sectionBase(
       context: context,
+      icon: Icons.event,
       title: WeekViewTranslations.dayEventsSectionTitle,
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),
@@ -191,6 +205,7 @@ class WeekViewDayWidget extends StatelessWidget {
 
     return _sectionBase(
       context: context,
+      icon: Icons.repeat,
       title: WeekViewTranslations.recurringEventsSectionTitle,
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),

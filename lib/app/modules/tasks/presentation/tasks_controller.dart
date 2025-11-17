@@ -237,7 +237,6 @@ class TasksController {
           .subtract(const Duration(days: 1))
           .dayEnd;
       final result = await getOverdueTasks(beforeDate);
-      print(beforeDate);
 
       return result.fold(
         (failure) => throw Exception(failure.message),
