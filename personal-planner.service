@@ -1,0 +1,14 @@
+[Unit]
+Description=Personal Planner Web App
+After=network.target
+
+[Service]
+Type=simple
+User=savioti
+WorkingDirectory=/home/savioti/Development/Projects/personal_planner
+ExecStart=/home/savioti/Development/Projects/personal_planner/run_web_app.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
