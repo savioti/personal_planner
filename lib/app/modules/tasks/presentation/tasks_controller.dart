@@ -233,8 +233,11 @@ class TasksController {
     });
 
     overdueTasksProvider = FutureProvider<List<TaskEntity>>((ref) async {
-      final now = DateTime.now();
-      final result = await getOverdueTasks(now);
+      final beforeDate = DateTime.now().toDateOnly
+          .subtract(const Duration(days: 1))
+          .dayEnd;
+      final result = await getOverdueTasks(beforeDate);
+      print(beforeDate);
 
       return result.fold(
         (failure) => throw Exception(failure.message),

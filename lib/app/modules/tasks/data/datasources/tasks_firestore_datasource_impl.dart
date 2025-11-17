@@ -241,11 +241,9 @@ class TasksFirestoreDatasourceImpl implements TasksDatasource {
     try {
       final col = _firestore.collection('tasks');
 
-      final nowTimestamp = Timestamp.fromDate(DateTime.now().toUtc());
-
       Query<Map<String, dynamic>> query = col
           .where('is_done', isEqualTo: false)
-          .where('deadline', isLessThan: nowTimestamp);
+          .where('deadline', isLessThan: request.before.toUtc());
 
       final querySnap = await query.get();
       final tasks = <TaskModel>[];
