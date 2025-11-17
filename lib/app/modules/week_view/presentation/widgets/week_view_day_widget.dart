@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
+import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_section_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_title_divider_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_widget.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
@@ -20,6 +20,7 @@ class WeekViewDayWidget extends StatelessWidget {
   final DateTime date;
   final List<EventEntity> events;
   final List<TaskEntity> tasks;
+  final List<EventEntity> recurringEvents;
   final Function(String eventId) onEventDelete;
   final Function(String taskId) onTaskDelete;
   final VoidCallback onSave;
@@ -33,6 +34,7 @@ class WeekViewDayWidget extends StatelessWidget {
     required this.date,
     required this.events,
     required this.tasks,
+    required this.recurringEvents,
     required this.onEventDelete,
     required this.onTaskDelete,
     required this.onSave,
@@ -47,14 +49,10 @@ class WeekViewDayWidget extends StatelessWidget {
 
     return DisabledArea(
       disabled: date.toDateOnly.isBefore(now),
-      child: Container(
-        decoration: BoxDecoration(
-          color: _dayColor(context: context),
-          borderRadius: BorderRadius.circular(
-            AppDimensions.containerBorderRadius,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingTiny,
         ),
-        padding: const EdgeInsets.all(AppDimensions.paddingSmall),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,64 +63,9 @@ class WeekViewDayWidget extends StatelessWidget {
                 color: theme.colorScheme.onPrimaryContainer,
               ),
               WeekViewDayTitleDividerWidget(),
-              const VerticalGap.medium(),
-              ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: tasks.length,
-                separatorBuilder: (_, index) => VerticalGap.small(),
-                itemBuilder: (_, index) {
-                  final task = tasks[index];
-                  return TaskWidget(
-                    task: task,
-                    onComplete: () {
-                      onTaskComplete(task.id);
-                    },
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: TaskFormDialog(
-                              task: task,
-                              onSave: onSave,
-                              onDelete: () => onTaskDelete(task.id),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-              if (tasks.isNotEmpty) WeekViewDaySectionDividerWidget(),
-              ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: events.length,
-                separatorBuilder: (_, index) => VerticalGap.small(),
-                itemBuilder: (_, index) {
-                  final event = events[index];
-
-                  return EventWidget(
-                    event: event,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: EventFormDialog(
-                              event: event,
-                              onSave: () => onSave.call(),
-                              onDelete: () => onEventDelete.call(event.id),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
+              _buildTasksSection(context: context),
+              _buildDayEventsSection(context: context),
+              _buildRecurringEventsSection(context: context),
             ],
           ),
         ),
@@ -130,14 +73,152 @@ class WeekViewDayWidget extends StatelessWidget {
     );
   }
 
-  Color? _dayColor({required BuildContext context}) {
+  Widget _sectionBase({
+    required BuildContext context,
+    required String title,
+    required Widget child,
+  }) {
     final theme = Theme.of(context);
-    final now = DateTime.now().toDateOnly;
 
-    if (date.toDateOnly == now) {
-      return theme.colorScheme.primaryContainer;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(
+          AppDimensions.containerBorderRadius,
+        ),
+      ),
+      margin: const EdgeInsets.only(top: AppDimensions.marginLarge),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingTiny,
+        vertical: AppDimensions.paddingSmall,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: AppDimensions.paddingSmall),
+            child: AppText(text: title, style: theme.textTheme.titleSmall),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTasksSection({required BuildContext context}) {
+    if (tasks.isEmpty) {
+      return SizedBox.shrink();
     }
 
-    return null;
+    return _sectionBase(
+      context: context,
+      title: WeekViewTranslations.tasksSectionTitle,
+      child: ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: tasks.length,
+        separatorBuilder: (_, index) => VerticalGap.small(),
+        itemBuilder: (_, index) {
+          final task = tasks[index];
+          return TaskWidget(
+            task: task,
+            onComplete: () {
+              onTaskComplete(task.id);
+            },
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: TaskFormDialog(
+                      task: task,
+                      onSave: onSave,
+                      onDelete: () => onTaskDelete(task.id),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDayEventsSection({required BuildContext context}) {
+    if (events.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    return _sectionBase(
+      context: context,
+      title: WeekViewTranslations.dayEventsSectionTitle,
+      child: ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: events.length,
+        separatorBuilder: (_, index) => VerticalGap.small(),
+        itemBuilder: (_, index) {
+          final event = events[index];
+
+          return EventWidget(
+            event: event,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: EventFormDialog(
+                      event: event,
+                      onSave: () => onSave.call(),
+                      onDelete: () => onEventDelete.call(event.id),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildRecurringEventsSection({required BuildContext context}) {
+    if (recurringEvents.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    return _sectionBase(
+      context: context,
+      title: WeekViewTranslations.recurringEventsSectionTitle,
+      child: ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: recurringEvents.length,
+        separatorBuilder: (_, index) => VerticalGap.small(),
+        itemBuilder: (_, index) {
+          final event = recurringEvents[index];
+
+          return EventWidget(
+            event: event,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: EventFormDialog(
+                      event: event,
+                      onSave: () => onSave.call(),
+                      onDelete: () => onEventDelete.call(event.id),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }

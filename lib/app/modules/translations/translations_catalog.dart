@@ -96,6 +96,10 @@ class WeekViewTranslations {
   static const String eventFormCancel = 'Cancelar';
   static const String eventDelete = 'Excluir';
   static const String eventRecurrence = 'Recorrência';
+
+  static const String tasksSectionTitle = 'Tarefas';
+  static const String dayEventsSectionTitle = 'Eventos do dia';
+  static const String recurringEventsSectionTitle = 'Recorrentes';
 }
 
 class UpcomingEventsTranslations {

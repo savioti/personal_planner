@@ -129,6 +129,12 @@ class WeekViewWidget extends ConsumerWidget {
         children: List.generate(_daysInWeek, (index) {
           final date = daysOfTheWeek[index];
           final events = eventsByDay[date] ?? [];
+          final dayEvents = events
+              .where((event) => !event.isRecurring)
+              .toList();
+          final recurringEvents = events
+              .where((event) => event.isRecurring)
+              .toList();
           final tasks = tasksByDay[date] ?? [];
           final weekday = Weekday.values[index];
 
@@ -137,7 +143,8 @@ class WeekViewWidget extends ConsumerWidget {
               title: WeekdayTranslations.getWeekDayNameByIndex(index + 1),
               date: date,
               weekday: weekday,
-              events: events,
+              events: dayEvents,
+              recurringEvents: recurringEvents,
               tasks: tasks,
               onEventDelete: (eventId) =>
                   _deleteEvent(eventId: eventId, ref: ref),

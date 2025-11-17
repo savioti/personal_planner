@@ -21,6 +21,9 @@ class EventEntity {
     this.recurrenceInterval,
   });
 
+  bool get isRecurring =>
+      recurrenceType != null && recurrenceType != RecurrenceType.none;
+
   @override
   String toString() {
     return 'EventEntity(id: $id, title: $title, startTime: $startTime, description: $description, recurrenceType: $recurrenceType, recurrenceWeekdays: $recurrenceWeekdays, recurrenceInterval: $recurrenceInterval)';

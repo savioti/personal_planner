@@ -28,6 +28,13 @@ class AppDimensions {
   static const double paddingXLarge = spacingXLarge;
   static const double paddingXXLarge = spacingXXLarge;
 
+  static const double marginTiny = spacingTiny;
+  static const double marginSmall = spacingSmall;
+  static const double marginMedium = spacingMedium;
+  static const double marginLarge = spacingLarge;
+  static const double marginXLarge = spacingXLarge;
+  static const double marginXXLarge = spacingXXLarge;
+
   static const double radiusSmall = BaseTokens.space1;
   static const double radiusMedium = BaseTokens.space2;
   static const double radiusLarge = BaseTokens.space4;
