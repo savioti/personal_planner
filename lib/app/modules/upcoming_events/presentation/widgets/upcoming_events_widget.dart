@@ -175,6 +175,37 @@ class UpcomingEventsWidget extends ConsumerWidget {
       return const SizedBox();
     }
 
+    if (events.length <= _eventsPerList) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...events.map((event) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppDimensions.spacingTiny),
+              child: EventWidget(
+                event: event,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        child: EventFormDialog(
+                          event: event,
+                          onSave: () => _refreshUpcomingEvents(ref: ref),
+                          onDelete: () =>
+                              _deleteEvent(eventId: event.id, ref: ref),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            );
+          }),
+        ],
+      );
+    }
+
     return Row(
       children: List.generate(_eventListsPerSection, (listIndex) {
         final partialItems = events
