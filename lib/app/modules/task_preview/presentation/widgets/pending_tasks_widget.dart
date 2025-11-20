@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
+import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_widget.dart';
@@ -105,6 +106,8 @@ class PendingTasksWidget extends ConsumerWidget {
           return const SizedBox();
         }
 
+        final sortedTasks = _sortTasks(tasks);
+
         return Container(
           padding: const EdgeInsets.all(AppDimensions.paddingMedium),
           decoration: BoxDecoration(
@@ -123,13 +126,13 @@ class PendingTasksWidget extends ConsumerWidget {
               ),
               const SizedBox(height: AppDimensions.spacingSmall),
               ListView.separated(
-                itemCount: tasks.length,
+                itemCount: sortedTasks.length,
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: AppDimensions.spacingSmall),
                 itemBuilder: (context, index) {
-                  final task = tasks[index];
+                  final task = sortedTasks[index];
 
                   return TaskWidget(
                     task: task,
@@ -167,6 +170,8 @@ class PendingTasksWidget extends ConsumerWidget {
           return const SizedBox();
         }
 
+        final sortedTasks = _sortTasks(tasks);
+
         return Container(
           padding: const EdgeInsets.all(AppDimensions.paddingMedium),
           decoration: BoxDecoration(
@@ -185,13 +190,13 @@ class PendingTasksWidget extends ConsumerWidget {
               ),
               const SizedBox(height: AppDimensions.spacingSmall),
               ListView.separated(
-                itemCount: tasks.length,
+                itemCount: sortedTasks.length,
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: AppDimensions.spacingSmall),
                 itemBuilder: (context, index) {
-                  final task = tasks[index];
+                  final task = sortedTasks[index];
 
                   return TaskWidget(
                     task: task,
@@ -227,6 +232,8 @@ class PendingTasksWidget extends ConsumerWidget {
           return const SizedBox();
         }
 
+        final sortedTasks = _sortTasks(tasks);
+
         return Container(
           padding: const EdgeInsets.all(AppDimensions.paddingMedium),
           decoration: BoxDecoration(
@@ -245,13 +252,13 @@ class PendingTasksWidget extends ConsumerWidget {
               ),
               const SizedBox(height: AppDimensions.spacingSmall),
               ListView.separated(
-                itemCount: tasks.length,
+                itemCount: sortedTasks.length,
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: AppDimensions.spacingSmall),
                 itemBuilder: (context, index) {
-                  final task = tasks[index];
+                  final task = sortedTasks[index];
                   return TaskWidget(
                     task: task,
                     onComplete: (_) => _onCompleteChanged(ref: ref),
@@ -284,5 +291,15 @@ class PendingTasksWidget extends ConsumerWidget {
     ref.invalidate(_controller.weekTasksProvider);
     ref.invalidate(_controller.backlogTasksProvider);
     ref.invalidate(_controller.overdueTasksProvider);
+  }
+
+  List<TaskEntity> _sortTasks(List<TaskEntity> tasks) {
+    final uncompletedTasks = tasks.where((task) => !task.isDone).toList();
+    final completedTasks = tasks.where((task) => task.isDone).toList();
+    final uncompletedTasksByDeadline = List<TaskEntity>.from(
+      uncompletedTasks,
+    )..sort((a, b) => a.deadline?.compareTo(b.deadline ?? DateTime.now()) ?? 0);
+
+    return [...uncompletedTasksByDeadline, ...completedTasks];
   }
 }

@@ -27,59 +27,62 @@ class TaskWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingMedium,
-        vertical: AppDimensions.paddingSmall,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary,
-        borderRadius: BorderRadius.circular(
-          AppDimensions.weekViewEventBorderRadius,
+    return Opacity(
+      opacity: task.isDone ? 0.75 : 1.0,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingMedium,
+          vertical: AppDimensions.paddingSmall,
         ),
-      ),
-      child: Builder(
-        builder: (context) {
-          return Row(
-            children: [
-              _buildCheckbox(),
-              const SizedBox(width: AppDimensions.spacingSmall),
-              Expanded(
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: TaskFormDialog(
-                              task: task,
-                              onSave: onSave,
-                              onDelete: () => onDelete(task.id),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary,
+          borderRadius: BorderRadius.circular(
+            AppDimensions.weekViewEventBorderRadius,
+          ),
+        ),
+        child: Builder(
+          builder: (context) {
+            return Row(
+              children: [
+                _buildCheckbox(),
+                const SizedBox(width: AppDimensions.spacingSmall),
+                Expanded(
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              child: TaskFormDialog(
+                                task: task,
+                                onSave: onSave,
+                                onDelete: () => onDelete(task.id),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: AppText(
+                              text: task.title,
+                              color: theme.colorScheme.onPrimary,
+                              style: AppTextStyles.bodySmallBold(),
                             ),
-                          );
-                        },
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AppText(
-                            text: task.title,
-                            color: theme.colorScheme.onPrimary,
-                            style: AppTextStyles.bodySmallBold(),
                           ),
-                        ),
-                        _buildDeadline(theme: theme),
-                      ],
+                          _buildDeadline(theme: theme),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

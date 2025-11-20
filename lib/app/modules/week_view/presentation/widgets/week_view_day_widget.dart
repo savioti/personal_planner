@@ -93,6 +93,7 @@ class WeekViewDayWidget extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: tasks.length,
+      padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingTiny),
       separatorBuilder: (_, index) => VerticalGap.small(),
       itemBuilder: (_, index) {
         final task = tasks[index];
