@@ -4,13 +4,17 @@ import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 class AppCheckbox extends StatelessWidget {
   final bool value;
   final Function(bool? value) onChanged;
-  final Color? color;
+  final Color? borderColor;
+  final Color? checkColor;
+  final Color? fillColor;
 
   const AppCheckbox({
     super.key,
     required this.value,
     required this.onChanged,
-    this.color,
+    this.borderColor,
+    this.checkColor,
+    this.fillColor,
   });
 
   @override
@@ -28,10 +32,13 @@ class AppCheckbox extends StatelessWidget {
           ),
         ),
         side: BorderSide(
-          color: color ?? theme.colorScheme.onPrimary,
+          color: borderColor ?? theme.colorScheme.onPrimary,
           width: 1.5,
         ),
-        checkColor: theme.colorScheme.onPrimary,
+        checkColor: checkColor ?? theme.colorScheme.onPrimary,
+        fillColor: WidgetStateProperty.all<Color>(
+          fillColor ?? theme.colorScheme.primary,
+        ),
         onChanged: onChanged,
       ),
     );

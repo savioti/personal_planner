@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
+import 'package:personal_planner/app/shared/design_system/icon/app_icon.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/extensions/date_time_extension.dart';
 
@@ -76,6 +77,16 @@ class EventWidget extends ConsumerWidget {
                         decoration: isPastEvent
                             ? TextDecoration.lineThrough
                             : TextDecoration.none,
+                      ),
+                    ),
+
+                    Visibility(
+                      visible: event.isRecurring,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: AppDimensions.spacingSmall,
+                        ),
+                        child: AppIcon(iconData: Icons.repeat),
                       ),
                     ),
                   ],

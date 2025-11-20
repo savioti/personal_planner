@@ -42,7 +42,7 @@ class TaskWidget extends StatelessWidget {
         builder: (context) {
           return Row(
             children: [
-              _buildCheckbox(colorScheme: theme.colorScheme),
+              _buildCheckbox(),
               const SizedBox(width: AppDimensions.spacingSmall),
               Expanded(
                 child: MouseRegion(
@@ -84,7 +84,7 @@ class TaskWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckbox({required ColorScheme colorScheme}) {
+  Widget _buildCheckbox() {
     return AppCheckbox(
       value: task.isDone,
       onChanged: (_) => _onCompleteChanged(),

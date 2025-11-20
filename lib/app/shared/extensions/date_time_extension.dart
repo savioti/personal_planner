@@ -219,4 +219,9 @@ extension DateTimeExtension on DateTime {
     return thisWeekRange.start.toDateOnly == otherWeekRange.start.toDateOnly &&
         thisWeekRange.end.toDateOnly == otherWeekRange.end.toDateOnly;
   }
+
+  bool get isToday {
+    final now = DateTime.now();
+    return year == now.year && month == now.month && day == now.day;
+  }
 }
