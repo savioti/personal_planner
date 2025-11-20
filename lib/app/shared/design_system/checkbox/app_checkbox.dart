@@ -39,6 +39,7 @@ class AppCheckbox extends StatelessWidget {
         fillColor: WidgetStateProperty.all<Color>(
           fillColor ?? theme.colorScheme.primary,
         ),
+        hoverColor: Colors.white.withValues(alpha: 0.1),
         onChanged: onChanged,
       ),
     );
