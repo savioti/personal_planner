@@ -41,7 +41,7 @@ class EventController {
   late final FutureProviderFamily<List<EventEntity>, Range<DateTime>>
   weekEventsProvider;
   late final FutureProvider<List<EventEntity>> nextWeekEventsProvider;
-  late final FutureProvider<List<EventEntity>> thisMonthEventsProvider;
+  late final FutureProvider<List<EventEntity>> insideMonthEventsProvider;
   late final FutureProvider<List<EventEntity>> futureEventsProvider;
 
   Future<Either<Failure, EventEntity>> addEvent({
@@ -420,12 +420,12 @@ class EventController {
       return result.fold((failure) => throw failure, (events) => events);
     });
 
-    thisMonthEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
+    insideMonthEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
       final controller = ref.watch(eventControllerProvider);
 
       final result = await controller.getEvents(
-        dateRangeStart: dayAfterNextWeek,
-        dateRangeEnd: endOfMonth,
+        dateRangeStart: dayAfterNextWeek.toDateOnly,
+        dateRangeEnd: dayAfterNextWeek.add(Duration(days: 30)).dayEnd,
       );
       return result.fold((failure) => throw failure, (events) => events);
     });

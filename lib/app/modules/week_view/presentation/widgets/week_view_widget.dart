@@ -196,7 +196,7 @@ class WeekViewWidget extends ConsumerWidget {
   void _refreshEvents({required WidgetRef ref}) {
     ref.invalidate(_eventController.weekEventsProvider);
     ref.invalidate(_eventController.nextWeekEventsProvider);
-    ref.invalidate(_eventController.thisMonthEventsProvider);
+    ref.invalidate(_eventController.insideMonthEventsProvider);
     ref.invalidate(_eventController.futureEventsProvider);
   }
 
