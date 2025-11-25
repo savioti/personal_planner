@@ -371,7 +371,7 @@ class EventController {
     final today = DateTime.now();
     final nextWeekRange = today.getNextWeekDateRange;
     final dayAfterNextWeek = nextWeekRange.end.add(const Duration(days: 1));
-    final endOfMonth = dayAfterNextWeek.monthEnd;
+    final endOfMonth = dayAfterNextWeek.add(Duration(days: 30)).dayEnd;
 
     eventControllerProvider = Provider<EventController>((ref) {
       return serviceLocator<EventController>();
@@ -425,14 +425,14 @@ class EventController {
 
       final result = await controller.getEvents(
         dateRangeStart: dayAfterNextWeek.toDateOnly,
-        dateRangeEnd: dayAfterNextWeek.add(Duration(days: 30)).dayEnd,
+        dateRangeEnd: endOfMonth,
       );
       return result.fold((failure) => throw failure, (events) => events);
     });
 
     futureEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
       final controller = ref.watch(eventControllerProvider);
-      final startOfFuture = endOfMonth.add(const Duration(days: 1));
+      final startOfFuture = endOfMonth.add(const Duration(days: 1)).toDateOnly;
       final endOfFuture = startOfFuture.nextTrimesterDateRange.end;
 
       final result = await controller.getEvents(
