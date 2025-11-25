@@ -52,10 +52,12 @@ class EventModel {
       endTime = endTime.toDate();
     }
 
+    final startTime = (map['start_time'] as Timestamp).toDate();
+
     return EventModel(
       id: map['id'] as String,
       title: map['title'] as String,
-      startTime: (map['start_time'] as Timestamp).toDate(),
+      startTime: startTime,
       endTime: endTime,
       description: map['description'] as String?,
       recurrenceType: map['recurrence_type'] as String?,

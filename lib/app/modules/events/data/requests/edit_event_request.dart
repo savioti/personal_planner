@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:personal_planner/app/shared/enums/recurrence_type.dart';
 import 'package:personal_planner/app/shared/enums/weekday.dart';
 
@@ -24,7 +25,7 @@ class EditEventRequest {
     return {
       'eventId': eventId,
       'title': title,
-      'startTime': startTime.toIso8601String(),
+      'start_time': Timestamp.fromDate(startTime),
       'description': description,
       'recurrence_type': recurrenceType?.toString() ?? 'none',
       'recurrence_weekdays': recurrenceWeekdays

@@ -10,4 +10,8 @@ void main() async {
   await runInitialSetup();
 
   runApp(const App());
+
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+  };
 }
