@@ -252,10 +252,7 @@ class _EventFormDialogState extends State<EventFormDialog> {
           child: AppMainButton(
             labelText: WeekViewTranslations.eventFormCancel,
             buttonType: EButtonType.secondary,
-            onPressed: () => {
-              widget.onDelete?.call(),
-              Navigator.of(context).pop(),
-            },
+            onPressed: () => {Navigator.of(context).pop()},
           ),
         ),
         const HorizontalGap.medium(),
