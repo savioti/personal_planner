@@ -44,8 +44,8 @@ class WeekViewDayWidget extends StatelessWidget {
     final now = DateTime.now().toDateOnly;
     final theme = Theme.of(context);
 
-    return DisabledArea(
-      disabled: date.toDateOnly.isBefore(now),
+    return Opacity(
+      opacity: date.toDateOnly.isBefore(now) ? 0.5 : 1.0,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.paddingTiny,
