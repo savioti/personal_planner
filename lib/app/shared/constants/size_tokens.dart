@@ -54,7 +54,7 @@ class AppDimensions {
   static const double weekViewDayCardLargeMinWidth = 128.0;
   static const double weekViewEventBorderRadius = 16.0;
 
-  static const double weekTasksWidthRatio = 0.15;
+  static const double rightColumnWidthRatio = 0.15;
 
   static const double dialogBorderWidth = 2.0;
   static const double dialogBorderRadius = 16.0;

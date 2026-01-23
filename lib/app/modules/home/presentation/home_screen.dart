@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_planner/app/modules/events/presentation/widgets/today_events.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/pending_tasks_widget.dart';
 import 'package:personal_planner/app/modules/upcoming_events/presentation/widgets/upcoming_events_widget.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_widget.dart';
@@ -28,7 +29,16 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             HorizontalGap.large(),
-            Expanded(child: PendingTasksWidget()),
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  Flexible(child: TodayEventsWidget()),
+                  VerticalGap.large(),
+                  Flexible(child: PendingTasksWidget()),
+                ],
+              ),
+            ),
           ],
         ),
       ),

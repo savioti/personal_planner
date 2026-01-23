@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_planner/app/infra/dependency_injection/service_locator.dart';
-import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
-import 'package:personal_planner/app/modules/events/domain/utils/event_utils.dart';
-import 'package:personal_planner/app/modules/events/presentation/event_controller.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_widget.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/tasks/domain/utils/task_utils.dart';
@@ -12,7 +8,6 @@ import 'package:personal_planner/app/modules/tasks/presentation/tasks_controller
 import 'package:personal_planner/app/modules/translations/translations_catalog.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
 import 'package:personal_planner/app/shared/design_system/button/app_icon_button.dart';
-import 'package:personal_planner/app/shared/design_system/gap/horizontal_gap.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/weekday.dart';
@@ -22,21 +17,12 @@ class WeekViewWidget extends ConsumerWidget {
   WeekViewWidget({super.key});
 
   final int _daysInWeek = 7;
-  final EventController _eventController = serviceLocator
-      .get<EventController>();
   final TasksController _tasksController = serviceLocator
       .get<TasksController>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
-    final weekDateRange = ref.watch(
-      _eventController.currentWeekDateRangeProvider,
-    );
-    final weekEventsAsync = ref.watch(
-      _eventController.weekEventsProvider(weekDateRange),
-    );
     final weekTasksAsync = ref.watch(_tasksController.weekTasksProvider);
 
     return Container(
@@ -51,30 +37,15 @@ class WeekViewWidget extends ConsumerWidget {
         children: [
           _buildHeader(theme: theme, ref: ref),
           const VerticalGap.medium(),
-          weekEventsAsync.when(
+          weekTasksAsync.when(
             loading: () {
               return const Center(child: CircularProgressIndicator());
             },
             error: (error, _) {
               return Center(child: Text('Error: $error'));
             },
-            data: (events) {
-              return weekTasksAsync.when(
-                loading: () {
-                  return const Center(child: CircularProgressIndicator());
-                },
-                error: (error, _) {
-                  return Center(child: Text('Error: $error'));
-                },
-                data: (tasks) {
-                  return _buildWeekDays(
-                    context: context,
-                    events: events,
-                    tasks: tasks,
-                    ref: ref,
-                  );
-                },
-              );
+            data: (tasks) {
+              return _buildWeekDays(context: context, tasks: tasks, ref: ref);
             },
           ),
         ],
@@ -99,25 +70,15 @@ class WeekViewWidget extends ConsumerWidget {
             _refreshWeekView(ref: ref);
           },
         ),
-        HorizontalGap.small(),
-        AppIconButton(
-          iconData: Icons.add_circle_outline_outlined,
-          color: theme.colorScheme.onPrimaryContainer,
-          onPressed: () {
-            _showAddEventDialog(ref: ref, context: ref.context);
-          },
-        ),
       ],
     );
   }
 
   Widget _buildWeekDays({
     required BuildContext context,
-    required List<EventEntity> events,
     required List<TaskEntity> tasks,
     required WidgetRef ref,
   }) {
-    final eventsByDay = EventUtils.groupEventsByDay(events);
     final tasksByDay = TaskUtils.groupTasksByDay(tasks);
     final daysOfTheWeek = DateTime.now().getDaysOfTheWeek();
 
@@ -128,7 +89,6 @@ class WeekViewWidget extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: List.generate(_daysInWeek, (index) {
           final date = daysOfTheWeek[index];
-          final events = eventsByDay[date] ?? [];
           final tasks = tasksByDay[date] ?? [];
           final weekday = Weekday.values[index];
 
@@ -137,20 +97,12 @@ class WeekViewWidget extends ConsumerWidget {
               title: WeekdayTranslations.getWeekDayNameByIndex(index + 1),
               date: date,
               weekday: weekday,
-              events: events,
               tasks: tasks,
-              onEventDelete: (eventId) =>
-                  _deleteEvent(eventId: eventId, ref: ref),
               onTaskDelete: (taskId) {
                 _deleteTask(taskId: taskId, ref: ref);
               },
               onTaskComplete: (taskId) =>
                   _completeTask(taskId: taskId, ref: ref),
-              onTapAddEvent: () => _showAddEventDialog(
-                ref: ref,
-                context: context,
-                initialDate: date,
-              ),
               onSave: () => _refreshWeekView(ref: ref),
             ),
           );
@@ -159,45 +111,12 @@ class WeekViewWidget extends ConsumerWidget {
     );
   }
 
-  void _showAddEventDialog({
-    required WidgetRef ref,
-    required BuildContext context,
-    DateTime? initialDate,
-  }) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: EventFormDialog(
-            initialDate: initialDate,
-            onSave: () => _refreshEvents(ref: ref),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteEvent({
-    required String eventId,
-    required WidgetRef ref,
-  }) async {
-    await _eventController.deleteEvent(eventId: eventId);
-    _refreshEvents(ref: ref);
-  }
-
   Future<void> _deleteTask({
     required String taskId,
     required WidgetRef ref,
   }) async {
     await _tasksController.deleteTask(taskId: taskId);
     ref.invalidate(_tasksController.weekTasksProvider);
-  }
-
-  void _refreshEvents({required WidgetRef ref}) {
-    ref.invalidate(_eventController.weekEventsProvider);
-    ref.invalidate(_eventController.nextWeekEventsProvider);
-    ref.invalidate(_eventController.insideMonthEventsProvider);
-    ref.invalidate(_eventController.futureEventsProvider);
   }
 
   Future<void> _completeTask({
@@ -209,7 +128,6 @@ class WeekViewWidget extends ConsumerWidget {
   }
 
   void _refreshWeekView({required WidgetRef ref}) {
-    _refreshEvents(ref: ref);
     ref.invalidate(_tasksController.weekTasksProvider);
   }
 }

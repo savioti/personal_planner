@@ -20,11 +20,8 @@ class PendingTasksWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: AppDimensions.weekTasksWidthRatio * screenWidth,
-      height: double.maxFinite,
       padding: const EdgeInsets.all(AppDimensions.paddingXLarge),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainer,
@@ -32,20 +29,28 @@ class PendingTasksWidget extends ConsumerWidget {
           AppDimensions.containerBorderRadius,
         ),
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context: context, ref: ref),
-            const SizedBox(height: AppDimensions.spacingSmall),
-            _buildOverdueTasksList(ref: ref, theme: theme),
-            const SizedBox(height: AppDimensions.spacingMedium),
-            _buildWeekTasksList(ref: ref, theme: theme),
-            const SizedBox(height: AppDimensions.spacingMedium),
-            _buildBacklogTasksList(ref: ref, theme: theme),
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(context: context, ref: ref),
+          const SizedBox(height: AppDimensions.spacingSmall),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOverdueTasksList(ref: ref, theme: theme),
+                const SizedBox(height: AppDimensions.spacingMedium),
+                _buildWeekTasksList(ref: ref, theme: theme),
+                const SizedBox(height: AppDimensions.spacingMedium),
+                _buildBacklogTasksList(ref: ref, theme: theme),
+              ],
+            ),
+          ),
+          ),
+        ],
       ),
     );
   }

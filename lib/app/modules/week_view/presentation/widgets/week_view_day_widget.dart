@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:personal_planner/app/modules/events/domain/entities/event_entity.dart';
 import 'package:personal_planner/app/modules/task_preview/presentation/widgets/task_form_dialog.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_form_dialog.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/week_view_day_title_divider_widget.dart';
-import 'package:personal_planner/app/modules/week_view/presentation/widgets/event_widget.dart';
 import 'package:personal_planner/app/modules/tasks/domain/entities/task_entity.dart';
 import 'package:personal_planner/app/modules/week_view/presentation/widgets/task_widget.dart';
 import 'package:personal_planner/app/shared/constants/size_tokens.dart';
-import 'package:personal_planner/app/shared/design_system/areas/disabled_area.dart';
 import 'package:personal_planner/app/shared/design_system/gap/vertical_gap.dart';
 import 'package:personal_planner/app/shared/design_system/text/app_text.dart';
 import 'package:personal_planner/app/shared/enums/weekday.dart';
@@ -17,26 +13,20 @@ class WeekViewDayWidget extends StatelessWidget {
   final String title;
   final Weekday weekday;
   final DateTime date;
-  final List<EventEntity> events;
   final List<TaskEntity> tasks;
-  final Function(String eventId) onEventDelete;
   final Function(String taskId) onTaskDelete;
   final VoidCallback onSave;
   final Function(String taskId) onTaskComplete;
-  final VoidCallback onTapAddEvent;
 
   const WeekViewDayWidget({
     super.key,
     required this.title,
     required this.weekday,
     required this.date,
-    required this.events,
     required this.tasks,
-    required this.onEventDelete,
     required this.onTaskDelete,
     required this.onSave,
     required this.onTaskComplete,
-    required this.onTapAddEvent,
   });
 
   @override
@@ -69,13 +59,7 @@ class WeekViewDayWidget extends StatelessWidget {
                         ),
                       )
                     : null,
-                child: Column(
-                  children: [
-                    _buildTasksSection(context: context),
-                    VerticalGap.medium(),
-                    _buildEventsSection(context: context),
-                  ],
-                ),
+                child: Column(children: [_buildTasksSection(context: context)]),
               ),
             ],
           ),
@@ -111,43 +95,6 @@ class WeekViewDayWidget extends StatelessWidget {
                     task: task,
                     onSave: onSave,
                     onDelete: () => onTaskDelete(task.id),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildEventsSection({required BuildContext context}) {
-    if (events.isEmpty) {
-      return SizedBox.shrink();
-    }
-
-    final sortedEvents = List<EventEntity>.from(events)
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-    return ListView.separated(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: sortedEvents.length,
-      separatorBuilder: (_, index) => VerticalGap.small(),
-      itemBuilder: (_, index) {
-        final event = sortedEvents[index];
-
-        return EventWidget(
-          event: event,
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return Dialog(
-                  child: EventFormDialog(
-                    event: event,
-                    onSave: () => onSave.call(),
-                    onDelete: () => onEventDelete.call(event.id),
                   ),
                 );
               },
