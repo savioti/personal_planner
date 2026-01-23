@@ -40,8 +40,8 @@ class EventController {
   late final Provider<Range<DateTime>> currentWeekDateRangeProvider;
   late final FutureProviderFamily<List<EventEntity>, Range<DateTime>>
   weekEventsProvider;
+  late final FutureProvider<List<EventEntity>> thisWeekEventsProvider;
   late final FutureProvider<List<EventEntity>> nextWeekEventsProvider;
-  late final FutureProvider<List<EventEntity>> insideMonthEventsProvider;
   late final FutureProvider<List<EventEntity>> futureEventsProvider;
 
   Future<Either<Failure, EventEntity>> addEvent({
@@ -371,7 +371,6 @@ class EventController {
     final today = DateTime.now();
     final nextWeekRange = today.getNextWeekDateRange;
     final dayAfterNextWeek = nextWeekRange.end.add(const Duration(days: 1));
-    final endOfMonth = dayAfterNextWeek.add(Duration(days: 30)).dayEnd;
 
     eventControllerProvider = Provider<EventController>((ref) {
       return serviceLocator<EventController>();
@@ -410,6 +409,21 @@ class EventController {
           return [...weekEvents, ...recurringEvents];
         });
 
+    thisWeekEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
+      final controller = ref.watch(eventControllerProvider);
+      final now = DateTime.now();
+      final tomorrow = now.add(const Duration(days: 1));
+      final startOfWeek = now.getStartOfWeek();
+      final endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+      final result = await controller.getEvents(
+        dateRangeStart: tomorrow.toDateOnly,
+        dateRangeEnd: endOfWeek.dayEnd,
+      );
+
+      return result.fold((failure) => throw failure, (events) => events);
+    });
+
     nextWeekEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
       final controller = ref.watch(eventControllerProvider);
 
@@ -420,23 +434,15 @@ class EventController {
       return result.fold((failure) => throw failure, (events) => events);
     });
 
-    insideMonthEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
-      final controller = ref.watch(eventControllerProvider);
-
-      final result = await controller.getEvents(
-        dateRangeStart: dayAfterNextWeek.toDateOnly,
-        dateRangeEnd: endOfMonth,
-      );
-      return result.fold((failure) => throw failure, (events) => events);
-    });
-
     futureEventsProvider = FutureProvider<List<EventEntity>>((ref) async {
       final controller = ref.watch(eventControllerProvider);
-      final startOfFuture = endOfMonth.add(const Duration(days: 1)).toDateOnly;
+      final startOfFuture = dayAfterNextWeek.toDateOnly
+          .add(const Duration(days: 1))
+          .toDateOnly;
       final endOfFuture = startOfFuture.nextTrimesterDateRange.end;
 
       final result = await controller.getEvents(
-        dateRangeStart: startOfFuture,
+        dateRangeStart: dayAfterNextWeek.toDateOnly,
         dateRangeEnd: endOfFuture,
       );
       return result.fold((failure) => throw failure, (events) => events);

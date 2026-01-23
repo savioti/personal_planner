@@ -24,11 +24,11 @@ class UpcomingEventsWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
+    final thisWeekEventsAsync = ref.watch(
+      _eventController.thisWeekEventsProvider,
+    );
     final nextWeekEventsAsync = ref.watch(
       _eventController.nextWeekEventsProvider,
-    );
-    final insideMonthEventsAsync = ref.watch(
-      _eventController.insideMonthEventsProvider,
     );
     final futureEventsAsync = ref.watch(_eventController.futureEventsProvider);
 
@@ -66,8 +66,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
               children: [
                 _buildSection(
                   theme: theme,
-                  title: UpcomingEventsTranslations.nextWeek,
-                  child: nextWeekEventsAsync.when(
+                  title: UpcomingEventsTranslations.thisWeek,
+                  child: thisWeekEventsAsync.when(
                     loading: () {
                       return const Center(child: CircularProgressIndicator());
                     },
@@ -87,8 +87,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
                 HorizontalGap.medium(),
                 _buildSection(
                   theme: theme,
-                  title: UpcomingEventsTranslations.nextMonth,
-                  child: insideMonthEventsAsync.when(
+                  title: UpcomingEventsTranslations.nextWeek,
+                  child: nextWeekEventsAsync.when(
                     loading: () {
                       return const Center(child: CircularProgressIndicator());
                     },
@@ -251,8 +251,8 @@ class UpcomingEventsWidget extends ConsumerWidget {
   }
 
   void _refreshUpcomingEvents({required WidgetRef ref}) {
+    ref.invalidate(_eventController.thisWeekEventsProvider);
     ref.invalidate(_eventController.nextWeekEventsProvider);
-    ref.invalidate(_eventController.insideMonthEventsProvider);
     ref.invalidate(_eventController.futureEventsProvider);
   }
 

@@ -104,8 +104,8 @@ class WeekViewTranslations {
 
 class UpcomingEventsTranslations {
   static const String title = 'Próximos Eventos';
+  static const String thisWeek = 'Essa Semana';
   static const String nextWeek = 'Próxima Semana';
-  static const String nextMonth = 'Dentro de um Mês';
   static const String future = 'Futuros';
 }
 
