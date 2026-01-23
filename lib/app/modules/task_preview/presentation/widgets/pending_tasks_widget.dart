@@ -38,17 +38,15 @@ class PendingTasksWidget extends ConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOverdueTasksList(ref: ref, theme: theme),
-                const SizedBox(height: AppDimensions.spacingMedium),
-                _buildWeekTasksList(ref: ref, theme: theme),
-                const SizedBox(height: AppDimensions.spacingMedium),
-                _buildBacklogTasksList(ref: ref, theme: theme),
-              ],
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildOverdueTasksList(ref: ref, theme: theme),
+                  const SizedBox(height: AppDimensions.spacingMedium),
+                  _buildBacklogTasksList(ref: ref, theme: theme),
+                ],
+              ),
             ),
-          ),
           ),
         ],
       ),
@@ -147,68 +145,6 @@ class PendingTasksWidget extends ConsumerWidget {
                     onSave: () {
                       _refreshTasks(ref: ref);
                     },
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildWeekTasksList({
-    required WidgetRef ref,
-    required ThemeData theme,
-  }) {
-    final weekTasksAsync = ref.watch(_controller.weekTasksProvider);
-
-    return weekTasksAsync.when(
-      loading: () {
-        return const Center(child: CircularProgressIndicator());
-      },
-      error: (error, _) {
-        return Center(child: Text('Error: $error'));
-      },
-      data: (tasks) {
-        if (tasks.isEmpty) {
-          return const SizedBox();
-        }
-
-        final sortedTasks = _sortTasks(tasks);
-
-        return Container(
-          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(
-              AppDimensions.containerBorderRadius,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppText(
-                text: WeekTasksTranslations.thisWeekTasksTitle,
-                color: theme.colorScheme.onPrimaryContainer,
-                style: AppTextStyles.titleSmall(),
-              ),
-              const SizedBox(height: AppDimensions.spacingSmall),
-              ListView.separated(
-                itemCount: sortedTasks.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: AppDimensions.spacingSmall),
-                itemBuilder: (context, index) {
-                  final task = sortedTasks[index];
-
-                  return TaskWidget(
-                    task: task,
-                    onComplete: (_) => _onCompleteChanged(ref: ref),
-                    onDelete: (_) =>
-                        _onDeletePressed(ref: ref, taskId: task.id),
-                    onSave: () => _refreshTasks(ref: ref),
                   );
                 },
               ),
