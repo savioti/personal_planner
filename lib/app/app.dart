@@ -8,16 +8,17 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColorScheme = MaterialTheme.lightScheme();
+    final selectedColorScheme = MaterialTheme.darkScheme();
+    final materialTheme = MaterialTheme(
+      MaterialTheme.defaultTextTheme(
+        selectedColorScheme: selectedColorScheme,
+      ),
+    );
 
     return ProviderScope(
       child: MaterialApp(
-        theme: ThemeData(
-          colorScheme: selectedColorScheme,
-          textTheme: MaterialTheme.defaultTextTheme(
-            selectedColorScheme: selectedColorScheme,
-          ),
-        ),
+        theme: materialTheme.theme(selectedColorScheme),
+        darkTheme: materialTheme.theme(selectedColorScheme),
         themeMode: ThemeMode.dark,
         home: HomeScreen(),
       ),
